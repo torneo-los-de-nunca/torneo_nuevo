@@ -76,11 +76,14 @@ function recalcularJugadoresDesdeFirestore(jugadoresBase, semanasDetalle) {
   }));
 
   // Recorremos todas las semanas y eventos
-  Object.entries(semanasDetalle).forEach(([semanaStr, docData]) => {
+  Object.entries(semanasDetalle).forEach(([semanaStr, valorSemana]) => {
     const semanaIndex = Number(semanaStr) - 1;
     if (semanaIndex < 0 || semanaIndex >= TOTAL_SEMANAS) return;
 
-    const eventos = docData.eventos || [];
+    // Ahora SEMPRE tratamos la semana como array de eventos
+    const eventos = Array.isArray(valorSemana)
+      ? valorSemana
+      : valorSemana?.eventos || [];
 
     eventos.forEach((evento) => {
       if (!evento.opciones) return;
@@ -117,6 +120,7 @@ function recalcularJugadoresDesdeFirestore(jugadoresBase, semanasDetalle) {
   return resultado;
 }
 
+
 function App() {
   const [jugadoresBase, setJugadoresBase] = useState([]); // solo nombres y datos fijos
   const [jugadores, setJugadores] = useState([]);         // tabla que se muestra
@@ -134,7 +138,9 @@ useEffect(() => {
     let data = {};
 
     snap.forEach((docu) => {
-      data[docu.id] = docu.data();
+      const docData = docu.data();
+      // Siempre guardamos solo el array de eventos
+      data[docu.id] = docData.eventos || [];
     });
 
     console.log("🔥 Firestore actualizado:", data);
@@ -143,6 +149,7 @@ useEffect(() => {
 
   return () => unsub();
 }, []);
+
 
 
   // ADMIN MODE (contraseña)
