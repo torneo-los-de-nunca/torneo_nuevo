@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./index.css";
 
-// 🔥 Import único de Firestore (ESTE ES EL CORRECTO)
+// 🔥 Import único de Firestore
 import {
   collection,
   doc,
@@ -17,7 +17,11 @@ import { db } from "./Firebase";
 // CONFIGURACIÓN BÁSICA
 // ===============================
 const TOTAL_SEMANAS = 52;
-const SEMANA_ACTUAL = Number(localStorage.getItem("semana_actual") || 1);
+const SEMANA_ACTUAL = Number(
+  (typeof localStorage !== "undefined" &&
+    localStorage.getItem("semana_actual")) ||
+    1
+);
 
 // semanas que son FECHA DE ORO (columna entera dorada)
 const FECHAS_DE_ORO = [1, 10, 14, 15, 17, 29, 30, 38, 45, 48, 50];
@@ -58,6 +62,36 @@ function formatearFechaLarga(fechaISO) {
 
   return fecha.toLocaleDateString("es-AR", opciones);
 }
+
+// ===============================
+// CÁLCULO DE PUNTOS (FUERA DEL COMPONENTE)
+// ===============================
+function calcularPuntosDeJugador(opciones) {
+  if (!opciones) return 0;
+
+  // Si es "NO SUMA" → siempre 0
+  if (opciones.nosuma) return 0;
+
+  // Base por aparecer
+  let puntosBase = 1;
+
+  // Si tiene penalización, NO suma el punto base
+  if (opciones.penal1 || opciones.penal10) {
+    puntosBase = 0;
+  }
+
+  let puntos = puntosBase;
+
+  if (opciones.oro) puntos += 1;
+  if (opciones.doble) puntos += 1;
+  if (opciones.triple) puntos += 2;
+
+  if (opciones.penal1) puntos -= 1;
+  if (opciones.penal10) puntos -= 10;
+
+  return puntos;
+}
+
 // Recalcula la tabla de jugadores a partir de las fichas guardadas en Firestore
 function recalcularJugadoresDesdeFirestore(jugadoresBase, semanasDetalle) {
   if (!jugadoresBase.length) return jugadoresBase;
@@ -80,10 +114,12 @@ function recalcularJugadoresDesdeFirestore(jugadoresBase, semanasDetalle) {
     const semanaIndex = Number(semanaStr) - 1;
     if (semanaIndex < 0 || semanaIndex >= TOTAL_SEMANAS) return;
 
-    // Ahora SEMPRE tratamos la semana como array de eventos
+    // ValorSemana SIEMPRE debería ser array de fichas
     const eventos = Array.isArray(valorSemana)
       ? valorSemana
-      : valorSemana?.eventos || [];
+      : Array.isArray(valorSemana?.eventos)
+      ? valorSemana.eventos
+      : [];
 
     eventos.forEach((evento) => {
       if (!evento.opciones) return;
@@ -120,39 +156,14 @@ function recalcularJugadoresDesdeFirestore(jugadoresBase, semanasDetalle) {
   return resultado;
 }
 
-
 function App() {
   const [jugadoresBase, setJugadoresBase] = useState([]); // solo nombres y datos fijos
-  const [jugadores, setJugadores] = useState([]);         // tabla que se muestra
+  const [jugadores, setJugadores] = useState([]); // tabla que se muestra
   const [semanasDetalle, setSemanasDetalle] = useState({});
-  const [semanaSeleccionada, setSemanaSeleccionada] = useState(SEMANA_ACTUAL);
+  const [semanaSeleccionada, setSemanaSeleccionada] =
+    useState(SEMANA_ACTUAL);
 
   const [tapCount, setTapCount] = useState(0);
-  const [adminVisible, setAdminVisible] = useState(false);
-
-  // ===============================
-  // 🔥 CARGA EN TIEMPO REAL DESDE FIRESTORE
-  // ===============================
-useEffect(() => {
-  const unsub = onSnapshot(collection(db, "semanas"), (snap) => {
-    let data = {};
-
-    snap.forEach((docu) => {
-      const docData = docu.data();
-      // Siempre guardamos solo el array de eventos
-      data[docu.id] = docData.eventos || [];
-    });
-
-    console.log("🔥 Firestore actualizado:", data);
-    setSemanasDetalle(data);
-  });
-
-  return () => unsub();
-}, []);
-
-
-
-  // ADMIN MODE (contraseña)
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
   const [isAdminLogged, setIsAdminLogged] = useState(false);
@@ -166,43 +177,66 @@ useEffect(() => {
 
   const [selectedPlayers, setSelectedPlayers] = useState({});
 
-  function toggleOption(nombreJugador, opcion, value) {
-    setSelectedPlayers((prev) => ({
-      ...prev,
-      [nombreJugador]: {
-        ...(prev[nombreJugador] || {}),
-        [opcion]: value,
-        selected: true,
-      },
-    }));
-  }
+  const semanasArray = Array.from(
+    { length: TOTAL_SEMANAS },
+    (_, i) => i + 1
+  );
 
-  function calcularPuntosDeJugador(opciones) {
-    if (!opciones) return 0;
+  // ===============================
+  // 🔥 CARGA EN TIEMPO REAL DESDE FIRESTORE (ÚNICA FUENTE)
+  // ===============================
+  useEffect(() => {
+    const colRef = collection(db, "semanas");
 
-    // Si es "NO SUMA" → siempre 0
-    if (opciones.nosuma) return 0;
+    const unsub = onSnapshot(colRef, (snap) => {
+      const data = {};
 
-    // Base por aparecer
-    let puntosBase = 1;
+      snap.forEach((docu) => {
+        const raw = docu.data();
+        const eventos = Array.isArray(raw?.eventos) ? raw.eventos : [];
+        data[docu.id] = eventos;
+      });
 
-    // Si tiene penalización, NO suma el punto base
-    if (opciones.penal1 || opciones.penal10) {
-      puntosBase = 0;
-    }
+      setSemanasDetalle(data);
+    });
 
-    let puntos = puntosBase;
+    return () => unsub();
+  }, []);
 
-    if (opciones.oro) puntos += 1;
-    if (opciones.doble) puntos += 1;
-    if (opciones.triple) puntos += 2;
+  // ===============================
+  // Cargar jugadores (tabla principal) desde JSON
+  // ===============================
+  useEffect(() => {
+    fetch("/jugadores.json")
+      .then((res) => res.json())
+      .then((data) => {
+        const base = data.map((j) => ({
+          ...j,
+          semanas: Array.from({ length: TOTAL_SEMANAS }, () => ({})),
+          total: 0,
+        }));
+        setJugadoresBase(base);
+      })
+      .catch((err) =>
+        console.error("Error cargando jugadores.json", err)
+      );
+  }, []);
 
-    if (opciones.penal1) puntos -= 1;
-    if (opciones.penal10) puntos -= 10;
+  // ===============================
+  // Recalcular tabla cuando cambian fichas o jugadores base
+  // ===============================
+  useEffect(() => {
+    if (!jugadoresBase.length) return;
+    const recalculados = recalcularJugadoresDesdeFirestore(
+      jugadoresBase,
+      semanasDetalle
+    );
+    setJugadores(recalculados);
+  }, [jugadoresBase, semanasDetalle]);
 
-    return puntos;
-  }
-
+  // ===============================
+  // ADMIN
+  // ===============================
   const checkPassword = () => {
     if (passwordInput === "Cacona") {
       setIsAdminLogged(true);
@@ -215,88 +249,71 @@ useEffect(() => {
     }
   };
 
-  const semanasArray = Array.from({ length: TOTAL_SEMANAS }, (_, i) => i + 1);
-
-  // ===============================
-  // Cargar semanas desde Firebase (fichas)
-  // ===============================
-
-
-  // ===============================
-  // Cargar jugadores (tabla principal)
-  // ===============================
-// 1) Cargo la lista base de jugadores (nombres, etc.) desde el JSON
-useEffect(() => {
-  fetch("/jugadores.json?cache=" + Date.now())
-    .then((res) => res.json())
-    .then((data) => {
-      const base = data.map((j) => ({
-        ...j,
-        semanas: Array.from({ length: TOTAL_SEMANAS }, () => ({})),
-        total: 0,
-      }));
-      setJugadoresBase(base);
-    })
-    .catch(() => console.error("Error cargando jugadores.json"));
-}, []);
-
-// 2) Cada vez que cambian las fichas o la base de jugadores,
-//    recalculo la tabla completa desde Firestore
-useEffect(() => {
-  if (!jugadoresBase.length) return;
-  const recalculados = recalcularJugadoresDesdeFirestore(
-    jugadoresBase,
-    semanasDetalle
-  );
-  setJugadores(recalculados);
-}, [jugadoresBase, semanasDetalle]);
-
+  function toggleOption(nombreJugador, opcion, value) {
+    setSelectedPlayers((prev) => ({
+      ...prev,
+      [nombreJugador]: {
+        ...(prev[nombreJugador] || {}),
+        [opcion]: value,
+        selected: true,
+      },
+    }));
+  }
 
   // Guarda la nueva ficha en la semana seleccionada
-// Guarda la nueva ficha en la semana seleccionada
-async function handleSaveEvent() {
-  const nuevaFicha = {
-    fecha: newEventDate,
-    jugadores: Object.keys(selectedPlayers).filter(
-      (j) => selectedPlayers[j].selected
-    ),
-    lugar: newEventLugar,
-    contexto: newEventContexto,
-    nota: newEventNota,
-    opciones: selectedPlayers,
-  };
+  async function handleSaveEvent() {
+    const semanaKey = String(semanaSeleccionada);
 
-  // 1) Actualizo estado local
-  setSemanasDetalle((prev) => ({
-    ...prev,
-    [semanaSeleccionada]: [
-      ...(prev[semanaSeleccionada] || []),
-      nuevaFicha,
-    ],
-  }));
+    const nuevaFicha = {
+      fecha: newEventDate,
+      jugadores: Object.keys(selectedPlayers).filter(
+        (j) => selectedPlayers[j].selected
+      ),
+      lugar: newEventLugar,
+      contexto: newEventContexto,
+      nota: newEventNota,
+      opciones: selectedPlayers,
+    };
 
-  // 2) Guardo en Firestore (ESTO es lo que comparten todos)
-  const eventosPrevios = semanasDetalle[semanaSeleccionada] || [];
-  const nuevosEventos = [...eventosPrevios, nuevaFicha];
+    // 1) Actualizo estado local
+    setSemanasDetalle((prev) => {
+      const anteriores = prev[semanaKey] || [];
+      return {
+        ...prev,
+        [semanaKey]: [...anteriores, nuevaFicha],
+      };
+    });
 
-  await setDoc(
-    doc(db, "semanas", String(semanaSeleccionada)),
-    { eventos: nuevosEventos },
-    { merge: true }
-  );
+    // 2) Guardo en Firestore (ESTO es lo que comparten todos)
+    const colRef = collection(db, "semanas");
+    const docRef = doc(colRef, semanaKey);
 
-  // 3) Reset formulario
-  setNewEventDate("");
-  setNewEventLugar("");
-  setNewEventContexto("");
-  setNewEventNota("");
-  setSelectedPlayers({});
-  setAddingEvent(false);
-}
+    // Traigo lo que hay para evitar race conditions
+    const snapshot = await getDocs(colRef);
+    let eventosPrevios = [];
+    snapshot.forEach((d) => {
+      if (d.id === semanaKey) {
+        const raw = d.data();
+        eventosPrevios = Array.isArray(raw?.eventos)
+          ? raw.eventos
+          : [];
+      }
+    });
 
+    const nuevosEventos = [...eventosPrevios, nuevaFicha];
 
+    await setDoc(docRef, { eventos: nuevosEventos }, { merge: false });
 
-async function borrarFicha(index) {
+    // 3) Reset formulario
+    setNewEventDate("");
+    setNewEventLugar("");
+    setNewEventContexto("");
+    setNewEventNota("");
+    setSelectedPlayers({});
+    setAddingEvent(false);
+  }
+
+  async function borrarFicha(index) {
     const semanaKey = String(semanaSeleccionada);
     const eventosSemana = semanasDetalle[semanaKey] || [];
     const evento = eventosSemana[index];
@@ -314,70 +331,24 @@ async function borrarFicha(index) {
     }
 
     setSemanasDetalle(nuevoDetalle);
-    // 🔥 Sincronizar cambios con Firestore
-if (nuevaSemana.length > 0) {
-  await setDoc(
-    doc(db, "semanas", semanaKey),
-    { eventos: nuevaSemana },
-    { merge: false }
-  );
-} else {
-  await deleteDoc(doc(db, "semanas", semanaKey));
-}
 
-    localStorage.setItem("semanasDetalle", JSON.stringify(nuevoDetalle));
+    // 2) Sincronizar con Firestore
+    const colRef = collection(db, "semanas");
+    const docRef = doc(colRef, semanaKey);
 
-    // 2) Actualizar puntos de los jugadores
-    if (!evento.opciones) return; // fichas viejas que no tenían opciones
-
-    setJugadores((prev) => {
-      const copia = prev.map((j) => ({
-        ...j,
-        semanas: [...j.semanas],
-      }));
-
-      Object.entries(evento.opciones).forEach(([nombreJugador, opts]) => {
-        if (!opts.selected) return;
-
-        const puntos = calcularPuntosDeJugador(opts);
-        const idxSemana = Number(semanaKey) - 1;
-
-        copia.forEach((jug) => {
-          if (jug.nombre !== nombreJugador) return;
-
-          const semanaObj = normalizarSemana(jug.semanas[idxSemana]);
-          const nuevoValor = (semanaObj.valor || 0) - puntos;
-
-          jug.semanas[idxSemana] = {
-            ...semanaObj,
-            valor: nuevoValor,
-            oro: false,
-            doble: false,
-            triple: false,
-            penal1: false,
-            penal10: false,
-            nosuma: false,
-          };
-
-          jug.total -= puntos;
-          if (jug.total < 0) jug.total = 0;
-        });
-      });
-
-      // ordenar por puntos de nuevo
-      copia.sort((a, b) => b.total - a.total);
-      localStorage.setItem("jugadores", JSON.stringify(copia));
-      return copia;
-    });
+    if (nuevaSemana.length > 0) {
+      await setDoc(docRef, { eventos: nuevaSemana }, { merge: false });
+    } else {
+      await deleteDoc(docRef);
+    }
   }
-// 🚨 SI LOS DATOS AÚN NO ESTÁN CARGADOS, NO RENDERIZAR LA TABLA
-if (!jugadores.length || !Object.keys(semanasDetalle).length) {
-  return (
-    <div style={{ color: "white", padding: 20 }}>
-      Cargando datos...
-    </div>
-  );
-}
+
+  // ===============================
+  // RENDER
+  // ===============================
+
+  const eventosSemana =
+    semanasDetalle[String(semanaSeleccionada)] || [];
 
   return (
     <div className="page">
@@ -478,26 +449,6 @@ if (!jugadores.length || !Object.keys(semanasDetalle).length) {
       >
         <img src="/icons/logo-ldn.png" alt="LDN Logo" className="logo-ldn" />
       </div>
-
-      {adminVisible && (
-        <div style={{ textAlign: "center", marginBottom: "15px" }}>
-          <button
-            onClick={() => setShowPasswordPrompt(true)}
-            style={{
-              padding: "10px 20px",
-              background: "#ff00c8",
-              border: "2px solid white",
-              color: "white",
-              borderRadius: "10px",
-              fontWeight: "700",
-              cursor: "pointer",
-              boxShadow: "0 0 10px #ff00c8",
-            }}
-          >
-            ADMIN MODE 🔒
-          </button>
-        </div>
-      )}
 
       {/* TÍTULO */}
       <h1 className="titulo">TORNEO LOS DE NUNCA 25–26</h1>
@@ -637,7 +588,7 @@ if (!jugadores.length || !Object.keys(semanasDetalle).length) {
       {/* DESCRIPCIÓN DE PUNTOS */}
       <h2 className="detalle-titulo">Descripción de puntos</h2>
 
-      {/* BOTÓN AGREGAR FICHA (solo admin real) */}
+      {/* BOTÓN AGREGAR FICHA (solo admin) */}
       {isAdminLogged && !addingEvent && (
         <div style={{ textAlign: "center", marginBottom: "15px" }}>
           <button
@@ -664,7 +615,8 @@ if (!jugadores.length || !Object.keys(semanasDetalle).length) {
           <button
             key={sem}
             className={
-              "week-btn" + (semanaSeleccionada === sem ? " week-selected" : "")
+              "week-btn" +
+              (semanaSeleccionada === sem ? " week-selected" : "")
             }
             onClick={() => setSemanaSeleccionada(sem)}
           >
@@ -685,7 +637,11 @@ if (!jugadores.length || !Object.keys(semanasDetalle).length) {
           }}
         >
           <h3
-            style={{ textAlign: "center", marginBottom: "10px", color: "white" }}
+            style={{
+              textAlign: "center",
+              marginBottom: "10px",
+              color: "white",
+            }}
           >
             Nueva Ficha – Semana {semanaSeleccionada}
           </h3>
@@ -891,12 +847,12 @@ if (!jugadores.length || !Object.keys(semanasDetalle).length) {
 
       {/* Lista de eventos */}
       <div className="detalle-lista">
-        {(semanasDetalle[String(semanaSeleccionada)] || []).length === 0 ? (
+        {eventosSemana.length === 0 ? (
           <p className="detalle-vacio">
             No hay puntos registrados para esta semana.
           </p>
         ) : (
-          semanasDetalle[String(semanaSeleccionada)].map((evento, index) => (
+          eventosSemana.map((evento, index) => (
             <div key={index} className="detalle-item">
               {/* CABECERA + BOTÓN BORRAR */}
               <div
@@ -966,7 +922,7 @@ if (!jugadores.length || !Object.keys(semanasDetalle).length) {
                   </p>
                 )}
 
-                {/* DETALLES SOLO SI TIENE OPCIONES MARCADAS */}
+                {/* DETALLES POR JUGADOR */}
                 {evento.opciones && (
                   <div style={{ marginTop: "10px", fontSize: "14px" }}>
                     <strong>Detalles por jugador:</strong>
