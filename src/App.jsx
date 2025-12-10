@@ -331,6 +331,11 @@ function App() {
     }
 
     setSemanasDetalle(nuevoDetalle);
+// 🔥 Recalcular tabla completa después de borrar
+if (jugadoresBase.length) {
+  const recalculados = recalcularJugadoresDesdeFirestore(jugadoresBase, nuevoDetalle);
+  setJugadores(recalculados);
+}
 
     // 2) Sincronizar con Firestore
     const colRef = collection(db, "semanas");
