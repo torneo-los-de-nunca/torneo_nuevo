@@ -220,21 +220,7 @@ useEffect(() => {
   // ===============================
   // Cargar semanas desde Firebase (fichas)
   // ===============================
-  useEffect(() => {
-    async function cargarSemanas() {
-      const colRef = collection(db, "semanas");
-      const snapshot = await getDocs(colRef);
 
-      const data = {};
-      snapshot.forEach((docu) => {
-        data[docu.id] = docu.data().eventos || [];
-      });
-
-      setSemanasDetalle(data);
-    }
-
-    cargarSemanas();
-  }, []);
 
   // ===============================
   // Cargar jugadores (tabla principal)
