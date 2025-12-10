@@ -370,6 +370,14 @@ if (nuevaSemana.length > 0) {
       return copia;
     });
   }
+// 🚨 SI LOS DATOS AÚN NO ESTÁN CARGADOS, NO RENDERIZAR LA TABLA
+if (!jugadores.length || !Object.keys(semanasDetalle).length) {
+  return (
+    <div style={{ color: "white", padding: 20 }}>
+      Cargando datos...
+    </div>
+  );
+}
 
   return (
     <div className="page">
