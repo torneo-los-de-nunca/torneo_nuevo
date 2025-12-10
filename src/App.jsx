@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react";
 import "./index.css";
-import { collection, doc, setDoc, getDocs } from "firebase/firestore";
+
+// 🔥 Import único de Firestore (ESTE ES EL CORRECTO)
+import {
+  collection,
+  doc,
+  setDoc,
+  getDocs,
+  onSnapshot,
+  deleteDoc
+} from "firebase/firestore";
+
 import { db } from "./firebase";
-import { onSnapshot } from "firebase/firestore";
-import { setDoc, doc, deleteDoc } from "firebase/firestore";
 
 // ===============================
 // CONFIGURACIÓN BÁSICA
