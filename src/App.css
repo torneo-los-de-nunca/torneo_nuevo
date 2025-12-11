@@ -39,7 +39,9 @@ body {
   color: #e9ddff;
 }
 
-/* LEYENDA */
+/* ===========================
+   LEYENDA
+=========================== */
 .leyenda {
   display: flex;
   justify-content: center;
@@ -62,70 +64,110 @@ body {
   border-radius: 4px;
 }
 
-.leyenda-oro  { background: #f1c40f; }
+.leyenda-oro { background: #f1c40f; }
 .leyenda-doble { background: #3498db; }
 .leyenda-triple { background: #9b59b6; }
-.leyenda-penal  { background: #e74c3c; }
+.leyenda-penal { background: #e74c3c; }
 
 /* ===========================
-   TABLA PRINCIPAL
+   TABLA PRINCIPAL (VERSIÓN ORIGINAL)
 =========================== */
 
-/* Permite scroll horizontal en celus */
 .tabla-wrapper {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-/* TABLA CON ANCHO FIJO — NO SE ACHICA */
 .tabla-torneo {
+  width: 95%;
+  margin: auto;
   border-collapse: collapse;
   background: #191326;
   border: 2px solid #7b2cff;
   box-shadow: 0 0 20px #5b1aff55;
-  min-width: 1800px; /* ancho fijo controlado */
+  border-radius: 12px;
+
+  /* mantiene tamaño parejo en celu */
+  min-width: 1800px;
 }
 
-/* CELDAS */
+/* CELDAS BASE */
 .tabla-torneo th,
 .tabla-torneo td {
   width: 42px;
   min-width: 42px;
   max-width: 42px;
-  height: 26px;
+  height: 28px;
   padding: 0;
-  margin: 0;
   text-align: center;
   font-size: 12px;
   border: 1px solid #2d2344;
-  overflow: hidden;
   white-space: nowrap;
 }
 
-/* COLUMNA JUGADOR */
+/* ===========================
+   CABECERA MEJORADA (SIN ROMPER NADA)
+=========================== */
+
+/* === COLUMNA JUGADOR === */
+.celda-jugador {
+  width: 140px !important;
+  min-width: 140px !important;
+  max-width: 140px !important;
+  background: linear-gradient(90deg, #3a2560, #6e3eb7);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 900;
+  padding-left: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-right: 2px solid #7b2cff;
+  text-shadow: 0 0 3px #000;
+}
+
+
+/* === COLUMNA PUNTOS === */
+.celda-total {
+  width: 80px !important;
+  min-width: 80px !important;
+  max-width: 80px !important;
+  background: linear-gradient(180deg, #3a2560, #241737);
+  color: #ffeaff;
+  font-size: 16px;
+  font-weight: 900;
+  text-shadow: 0 0 3px #000;
+  border-right: 2px solid #7b2cff;
+}
+
+
+
+
+/* ===========================
+   JUGADORES / PUNTOS (VERSIÓN ORIGINAL)
+=========================== */
+
 .celda-jugador {
   width: 120px !important;
   min-width: 120px !important;
   max-width: 120px !important;
   text-align: left;
-  padding-left: 6px;
+  padding-left: 10px;
   font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: #fff;
+  background: #2b1a46;
 }
 
-/* COLUMNA TOTAL */
 .celda-total {
-  width: 50px !important;
-  min-width: 50px !important;
-  max-width: 50px !important;
   font-weight: 800;
+  width: 50px !important;
+  background: #2b1a46;
+  color: #ffeaff;
 }
 
 /* ===========================
-   DETALLES DE LAS FICHAS
+   DETALLES DE FICHAS (EL ORIGINAL LINDO)
 =========================== */
 
 .detalle-titulo {
@@ -155,9 +197,7 @@ body {
   cursor: pointer;
 }
 
-.week-btn:hover {
-  background: #7b2cff;
-}
+.week-btn:hover { background: #7b2cff; }
 
 .week-selected {
   background: #f1c40f;
@@ -185,9 +225,32 @@ body {
   padding: 8px 10px;
 }
 
+.detalle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detalle-fecha {
+  font-weight: 700;
+  color: #f1c40f;
+}
+
+.detalle-sub {
+  font-size: 13px;
+  color: #d0c4ff;
+}
+
+.detalle-body {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #f0e8ff;
+}
+
 /* ===========================
    RESPONSIVE
 =========================== */
+
 @media (max-width: 768px) {
   .titulo { font-size: 22px; }
 
@@ -202,3 +265,36 @@ body {
     height: 24px;
   }
 }
+/* ====== OVERRIDE TOTAL CABECERA (FORZADO) ====== */
+/* === CABECERA GENERAL === */
+.tabla-torneo th {
+  background: linear-gradient(180deg, #6d30c7, #37186a);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+  text-shadow: 0 0 4px #000;
+  border-bottom: 2px solid #8a48ff;
+  letter-spacing: 0.3px;
+}
+
+/* === MESES === */
+.tabla-torneo th[colspan] {
+  background: linear-gradient(180deg, #8f45ff, #431c88);
+  font-size: 15px;
+  font-weight: 900;
+  text-transform: uppercase;
+  border-left: 2px solid #0003;
+  border-right: 2px solid #0003;
+  color: #fff;
+}
+
+
+/* === SEMANAS 1–52 === */
+.tabla-torneo tr:nth-child(2) th {
+  background: #2d1e4f;
+  color: #d9caff;
+  font-size: 12px;
+  font-weight: 700;
+  border-bottom: 1px solid #7b2cff;
+}
+
