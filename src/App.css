@@ -1,4 +1,6 @@
-/* RESET */
+/* ===========================
+   RESET BÁSICO
+=========================== */
 * {
   margin: 0;
   padding: 0;
@@ -11,12 +13,14 @@ body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* ===========================
+   GENERAL
+=========================== */
 .page {
   padding-bottom: 60px;
   min-height: 100vh;
 }
 
-/* LOGO */
 .logo-container {
   display: flex;
   justify-content: center;
@@ -28,7 +32,6 @@ body {
   height: 80px;
 }
 
-/* TÍTULO */
 .titulo {
   text-align: center;
   font-size: 28px;
@@ -59,27 +62,29 @@ body {
   border-radius: 4px;
 }
 
-.leyenda-oro { background: #f1c40f; }
+.leyenda-oro  { background: #f1c40f; }
 .leyenda-doble { background: #3498db; }
 .leyenda-triple { background: #9b59b6; }
-.leyenda-penal { background: #e74c3c; }
+.leyenda-penal  { background: #e74c3c; }
 
-/* WRAPPER — permite scroll en celular */
+/* ===========================
+   TABLA PRINCIPAL
+=========================== */
+
+/* Permite scroll horizontal en celus */
 .tabla-wrapper {
   width: 100%;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch; /* suave en iPhone */
+  -webkit-overflow-scrolling: touch;
 }
 
-/* TABLA FIJA, SIN DEFORMARSE */
+/* TABLA CON ANCHO FIJO — NO SE ACHICA */
 .tabla-torneo {
   border-collapse: collapse;
   background: #191326;
   border: 2px solid #7b2cff;
   box-shadow: 0 0 20px #5b1aff55;
-
-  /* 🔥 OBLIGAMOS ancho mínimo para que no se achique en celular */
-  min-width: 1800px;
+  min-width: 1800px; /* ancho fijo controlado */
 }
 
 /* CELDAS */
@@ -103,12 +108,12 @@ body {
   width: 120px !important;
   min-width: 120px !important;
   max-width: 120px !important;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   text-align: left;
   padding-left: 6px;
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* COLUMNA TOTAL */
@@ -119,7 +124,10 @@ body {
   font-weight: 800;
 }
 
-/* DESCRIPCIÓN */
+/* ===========================
+   DETALLES DE LAS FICHAS
+=========================== */
+
 .detalle-titulo {
   margin-top: 25px;
   margin-bottom: 8px;
@@ -128,7 +136,6 @@ body {
   color: #e7d8ff;
 }
 
-/* SEMANAS BOTONES */
 .detalle-weeks-bar {
   display: flex;
   flex-wrap: wrap;
@@ -148,14 +155,16 @@ body {
   cursor: pointer;
 }
 
-.week-btn:hover { background: #7b2cff; }
+.week-btn:hover {
+  background: #7b2cff;
+}
+
 .week-selected {
   background: #f1c40f;
   color: #000;
   font-weight: 700;
 }
 
-/* LISTA DE EVENTOS */
 .detalle-lista {
   width: 95%;
   max-width: 800px;
@@ -176,40 +185,20 @@ body {
   padding: 8px 10px;
 }
 
-.detalle-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.detalle-fecha {
-  font-weight: 700;
-  color: #f1c40f;
-}
-
-.detalle-sub {
-  font-size: 13px;
-  color: #d0c4ff;
-}
-
-.detalle-body {
-  margin-top: 6px;
-  font-size: 13px;
-  color: #f0e8ff;
-}
-
-/* RESPONSIVE */
+/* ===========================
+   RESPONSIVE
+=========================== */
 @media (max-width: 768px) {
   .titulo { font-size: 22px; }
+
+  .celda-jugador {
+    max-width: 110px;
+    font-size: 12px;
+  }
 
   .tabla-torneo th,
   .tabla-torneo td {
     font-size: 10px;
     height: 24px;
-  }
-
-  .celda-jugador {
-    max-width: 110px;
-    font-size: 12px;
   }
 }
