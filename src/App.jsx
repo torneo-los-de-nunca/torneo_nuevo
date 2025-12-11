@@ -51,17 +51,18 @@ const normalizarSemana = (entrada) => {
 // Fecha larga para las fichas
 function formatearFechaLarga(fechaISO) {
   if (!fechaISO) return "";
-  const fecha = new Date(fechaISO);
 
-  const opciones = {
+  const [year, month, day] = fechaISO.split("-");
+  const fecha = new Date(year, month - 1, day);
+
+  return fecha.toLocaleDateString("es-AR", {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
-  };
-
-  return fecha.toLocaleDateString("es-AR", opciones);
+  });
 }
+
 
 // ===============================
 // CÁLCULO DE PUNTOS (FUERA DEL COMPONENTE)
@@ -135,16 +136,30 @@ function recalcularJugadoresDesdeFirestore(jugadoresBase, semanasDetalle) {
 
         const semanaObj = normalizarSemana(jug.semanas[semanaIndex]);
 
-        jug.semanas[semanaIndex] = {
-          ...semanaObj,
-          valor: (semanaObj.valor || 0) + puntos,
-          oro: !!opts.oro,
-          doble: !!opts.doble,
-          triple: !!opts.triple,
-          penal1: !!opts.penal1,
-          penal10: !!opts.penal10,
-          nosuma: !!opts.nosuma,
-        };
+// Acumular valor
+const nuevoValor = (semanaObj.valor || 0) + puntos;
+
+// Acumular flags sin pisar otros
+const nuevoOro = semanaObj.oro || opts.oro;
+const nuevoDoble = semanaObj.doble || opts.doble;
+const nuevoTriple = semanaObj.triple || opts.triple;
+
+// penal solo es flag, pero no manda si el valor es positivo
+const hayPenal = semanaObj.penal1 || semanaObj.penal10 || opts.penal1 || opts.penal10;
+
+// no suma solo manda si no hay especiales ni penal negativo
+const hayNoSuma = semanaObj.nosuma || opts.nosuma;
+
+jug.semanas[semanaIndex] = {
+  valor: nuevoValor,
+  oro: nuevoOro,
+  doble: nuevoDoble,
+  triple: nuevoTriple,
+  penal1: semanaObj.penal1 || opts.penal1,
+  penal10: semanaObj.penal10 || opts.penal10,
+  nosuma: hayNoSuma,
+};
+
 
         jug.total += puntos;
       });
@@ -176,6 +191,7 @@ function App() {
   const [newEventNota, setNewEventNota] = useState("");
 
   const [selectedPlayers, setSelectedPlayers] = useState({});
+const [editIndex, setEditIndex] = useState(null);
 
   const semanasArray = Array.from(
     { length: TOTAL_SEMANAS },
@@ -261,92 +277,110 @@ function App() {
   }
 
   // Guarda la nueva ficha en la semana seleccionada
-  async function handleSaveEvent() {
-    const semanaKey = String(semanaSeleccionada);
+async function handleSaveEvent() {
+  const semanaKey = String(semanaSeleccionada);
 
-    const nuevaFicha = {
-      fecha: newEventDate,
-      jugadores: Object.keys(selectedPlayers).filter(
-        (j) => selectedPlayers[j].selected
-      ),
-      lugar: newEventLugar,
-      contexto: newEventContexto,
-      nota: newEventNota,
-      opciones: selectedPlayers,
-    };
+  const nuevaFicha = {
+    fecha: newEventDate,
+    jugadores: Object.keys(selectedPlayers).filter(
+      (j) => selectedPlayers[j].selected
+    ),
+    lugar: newEventLugar,
+    contexto: newEventContexto,
+    nota: newEventNota,
+    opciones: selectedPlayers,
+  };
 
-    // 1) Actualizo estado local
-    setSemanasDetalle((prev) => {
-      const anteriores = prev[semanaKey] || [];
-      return {
-        ...prev,
-        [semanaKey]: [...anteriores, nuevaFicha],
-      };
-    });
+  const eventosPrevios = semanasDetalle[semanaKey] || [];
+  let nuevosEventos;
 
-    // 2) Guardo en Firestore (ESTO es lo que comparten todos)
-    const colRef = collection(db, "semanas");
-    const docRef = doc(colRef, semanaKey);
-
-    // Traigo lo que hay para evitar race conditions
-    const snapshot = await getDocs(colRef);
-    let eventosPrevios = [];
-    snapshot.forEach((d) => {
-      if (d.id === semanaKey) {
-        const raw = d.data();
-        eventosPrevios = Array.isArray(raw?.eventos)
-          ? raw.eventos
-          : [];
-      }
-    });
-
-    const nuevosEventos = [...eventosPrevios, nuevaFicha];
-
-    await setDoc(docRef, { eventos: nuevosEventos }, { merge: false });
-
-    // 3) Reset formulario
-    setNewEventDate("");
-    setNewEventLugar("");
-    setNewEventContexto("");
-    setNewEventNota("");
-    setSelectedPlayers({});
-    setAddingEvent(false);
+  // 🟣 Si estamos EDITANDO (editIndex != null) → reemplazamos
+  if (editIndex !== null) {
+    nuevosEventos = [...eventosPrevios];
+    nuevosEventos[editIndex] = nuevaFicha;
+  } else {
+    // 🟢 Si NO estamos editando → agregamos una ficha nueva
+    nuevosEventos = [...eventosPrevios, nuevaFicha];
   }
 
-  async function borrarFicha(index) {
-    const semanaKey = String(semanaSeleccionada);
-    const eventosSemana = semanasDetalle[semanaKey] || [];
-    const evento = eventosSemana[index];
+  // 1) Actualizar estado local
+  setSemanasDetalle((prev) => ({
+    ...prev,
+    [semanaKey]: nuevosEventos,
+  }));
 
-    if (!evento) return;
+  // 2) Guardar en Firestore
+  await setDoc(
+    doc(db, "semanas", semanaKey),
+    { eventos: nuevosEventos },
+    { merge: true }
+  );
 
-    // 1) Actualizar semanasDetalle (sacar la ficha de esa semana)
-    const nuevaSemana = eventosSemana.filter((_, i) => i !== index);
-    const nuevoDetalle = { ...semanasDetalle };
-
-    if (nuevaSemana.length > 0) {
-      nuevoDetalle[semanaKey] = nuevaSemana;
-    } else {
-      delete nuevoDetalle[semanaKey];
-    }
-
-    setSemanasDetalle(nuevoDetalle);
-// 🔥 Recalcular tabla completa después de borrar
-if (jugadoresBase.length) {
-  const recalculados = recalcularJugadoresDesdeFirestore(jugadoresBase, nuevoDetalle);
-  setJugadores(recalculados);
+  // 3) Resetear formulario y salir de modo edición
+  setEditIndex(null);
+  setNewEventDate("");
+  setNewEventLugar("");
+  setNewEventContexto("");
+  setNewEventNota("");
+  setSelectedPlayers({});
+  setAddingEvent(false);
 }
 
-    // 2) Sincronizar con Firestore
-    const colRef = collection(db, "semanas");
-    const docRef = doc(colRef, semanaKey);
 
-    if (nuevaSemana.length > 0) {
-      await setDoc(docRef, { eventos: nuevaSemana }, { merge: false });
-    } else {
-      await deleteDoc(docRef);
-    }
+async function borrarFicha(index) {
+  const semanaKey = String(semanaSeleccionada);
+  const eventosSemana = semanasDetalle[semanaKey] || [];
+  const evento = eventosSemana[index];
+
+  if (!evento) return;
+
+  // 1) Actualizar semanasDetalle (sacar la ficha)
+  const nuevaSemana = eventosSemana.filter((_, i) => i !== index);
+  const nuevoDetalle = { ...semanasDetalle };
+
+  if (nuevaSemana.length > 0) {
+    nuevoDetalle[semanaKey] = nuevaSemana;
+  } else {
+    delete nuevoDetalle[semanaKey];
   }
+
+  setSemanasDetalle(nuevoDetalle);
+
+  // 🔥 Recalcular tabla
+  if (jugadoresBase.length) {
+    const recalculados = recalcularJugadoresDesdeFirestore(
+      jugadoresBase,
+      nuevoDetalle
+    );
+    setJugadores(recalculados);
+  }
+
+  // 🔥 Sincronizar con Firestore
+  const docRef = doc(db, "semanas", semanaKey);
+
+  if (nuevaSemana.length > 0) {
+    await setDoc(docRef, { eventos: nuevaSemana }, { merge: false });
+  } else {
+    await deleteDoc(docRef);
+  }
+}
+function editarFicha(index) {
+  const semanaKey = String(semanaSeleccionada);
+  const evento = semanasDetalle[semanaKey][index];
+
+  if (!evento) return;
+
+  setEditIndex(index);
+
+  setNewEventDate(evento.fecha || "");
+  setNewEventLugar(evento.lugar || "");
+  setNewEventContexto(evento.contexto || "");
+  setNewEventNota(evento.nota || "");
+  setSelectedPlayers(evento.opciones || {});
+
+  setAddingEvent(true);
+}
+
 
   // ===============================
   // RENDER
@@ -507,83 +541,114 @@ if (jugadoresBase.length) {
                 </td>
                 <td className="celda-total">{j.total}</td>
 
-                {semanasArray.map((sem) => {
-                  const semana = normalizarSemana(j.semanas?.[sem - 1]);
+{semanasArray.map((sem) => {
+  const semana = normalizarSemana(j.semanas?.[sem - 1]);
+  const valor = semana.valor ?? "";
 
-                  const valor = semana.valor ?? "";
+  // FLAGS
+  const esOro = semana.oro;
+  const esDoble = semana.doble;
+  const esTriple = semana.triple;
+  const esPenal1 = semana.penal1;
+  const esPenal10 = semana.penal10;
+  const esNoSuma = semana.nosuma;
+// ⚠️ SI EL VALOR FINAL ES 0 → SIEMPRE GRIS
+if (valor === 0) {
+  return (
+    <td key={sem} style={{ backgroundColor: "#808080", color: "white" }}>
+      {valor}
+    </td>
+  );
+}
 
-                  // FLAGS
-                  const esOro = semana.oro;
-                  const esDoble = semana.doble;
-                  const esTriple = semana.triple;
-                  const esPenal1 = semana.penal1;
-                  const esPenal10 = semana.penal10;
-                  const esNoSuma = semana.nosuma;
-                  const esSimple =
-                    !esOro &&
-                    !esDoble &&
-                    !esTriple &&
-                    !esPenal1 &&
-                    !esPenal10 &&
-                    !esNoSuma &&
-                    valor !== ""; // jugador seleccionado simple
+  const style = {};
 
-                  const style = {};
+  // ======================================================
+  // 1) PENALIZACIÓN → SOLO SI EL VALOR FINAL ES NEGATIVO
+  // ======================================================
+  if ((esPenal1 || esPenal10) && valor < 0) {
+    style.backgroundColor = "#e74c3c";
+    style.color = "#ffffff";
+    return (
+      <td key={sem} style={style}>
+        {valor}
+      </td>
+    );
+  }
 
-                  // 👉 1. PENALIZACIONES (máxima prioridad)
-                  if ((esPenal1 || esPenal10) && valor !== "") {
-                    style.backgroundColor = "#e74c3c"; // rojo fuerte
-                    style.color = "#ffffff";
-                    return (
-                      <td key={sem} style={style}>
-                        {valor}
-                      </td>
-                    );
-                  }
+  // ======================================================
+  // 2) ORO / DOBLE / TRIPLE → PRIORIDAD ALTA
+  // ======================================================
+  const colores = [];
+  if (esOro) colores.push("#f1c40f");
+  if (esDoble) colores.push("#3498db");
+  if (esTriple) colores.push("#9b59b6");
 
-                  // 👉 2. ORO / DOBLE / TRIPLE (multicolor)
-                  const colores = [];
-                  if (esOro) colores.push("#f1c40f");
-                  if (esDoble) colores.push("#3498db");
-                  if (esTriple) colores.push("#9b59b6");
+  if (colores.length === 1 && valor !== "") {
+    style.backgroundColor = colores[0];
+    return (
+      <td key={sem} style={style}>
+        {valor}
+      </td>
+    );
+  }
 
-                  if (colores.length === 1 && valor !== "") {
-                    style.backgroundColor = colores[0];
-                  }
+  if (colores.length > 1 && valor !== "") {
+    const partes = colores.map((c, i) => {
+      const start = (100 / colores.length) * i;
+      const end = (100 / colores.length) * (i + 1);
+      return `${c} ${start}% ${end}%`;
+    });
 
-                  if (colores.length > 1 && valor !== "") {
-                    const partes = colores.map((c, i) => {
-                      const start = (100 / colores.length) * i;
-                      const end = (100 / colores.length) * (i + 1);
-                      return `${c} ${start}% ${end}%`;
-                    });
-                    style.backgroundImage = `linear-gradient(135deg, ${partes.join(
-                      ", "
-                    )})`;
-                  }
+    style.backgroundImage = `linear-gradient(135deg, ${partes.join(", ")})`;
 
-                  // 👉 3. SELECCIONADO SIMPLE (sin ningún extra)
-                  if (esSimple) {
-                    style.backgroundColor = "#c59bff"; // lila suave
-                  }
+    return (
+      <td key={sem} style={style}>
+        {valor}
+      </td>
+    );
+  }
 
-                  // 👉 4. NO SUMA (solo si no tiene nada más)
-                  if (
-                    esNoSuma &&
-                    !esSimple &&
-                    colores.length === 0 &&
-                    valor !== ""
-                  ) {
-                    style.backgroundColor = "#808080"; // gris
-                    style.color = "white";
-                  }
+  // ======================================================
+  // 3) NO SUMA
+  // ======================================================
+  if (esNoSuma && valor !== "") {
+    style.backgroundColor = "#808080";
+    style.color = "white";
+    return (
+      <td key={sem} style={style}>
+        {valor}
+      </td>
+    );
+  }
 
-                  return (
-                    <td key={sem} style={style}>
-                      {valor !== "" ? valor : ""}
-                    </td>
-                  );
-                })}
+  // ======================================================
+  // 4) SUMA SIMPLE
+  // ======================================================
+  const esSimple =
+    !esOro &&
+    !esDoble &&
+    !esTriple &&
+    !esPenal1 &&
+    !esPenal10 &&
+    !esNoSuma &&
+    valor !== "";
+
+  if (esSimple) {
+    style.backgroundColor = "#c59bff";
+    return (
+      <td key={sem} style={style}>
+        {valor}
+      </td>
+    );
+  }
+
+  // ======================================================
+  // 5) VACÍO
+  // ======================================================
+  return <td key={sem}>{valor}</td>;
+})}
+
               </tr>
             ))}
           </tbody>
@@ -891,22 +956,41 @@ if (jugadoresBase.length) {
                 </div>
 
                 {/* BOTÓN BORRAR SOLO SI ES ADMIN */}
-                {isAdminLogged && (
-                  <button
-                    onClick={() => borrarFicha(index)}
-                    style={{
-                      background: "red",
-                      color: "white",
-                      border: "none",
-                      padding: "5px 10px",
-                      borderRadius: "6px",
-                      cursor: "pointer",
-                      fontWeight: "700",
-                    }}
-                  >
-                    X
-                  </button>
-                )}
+{isAdminLogged && (
+  <div style={{ display: "flex", gap: "5px" }}>
+    <button
+      onClick={() => editarFicha(index)}
+      style={{
+        background: "#00bfff",
+        color: "white",
+        border: "none",
+        padding: "5px 10px",
+        borderRadius: "6px",
+        cursor: "pointer",
+        fontWeight: "700",
+      }}
+    >
+      EDITAR
+    </button>
+
+    <button
+      onClick={() => borrarFicha(index)}
+      style={{
+        background: "red",
+        color: "white",
+        border: "none",
+        padding: "5px 10px",
+        borderRadius: "6px",
+        cursor: "pointer",
+        fontWeight: "700",
+      }}
+    >
+      X
+    </button>
+  </div>
+)}
+
+
               </div>
 
               {/* CUERPO DE LA FICHA */}
@@ -928,33 +1012,38 @@ if (jugadoresBase.length) {
                 )}
 
                 {/* DETALLES POR JUGADOR */}
-                {evento.opciones && (
-                  <div style={{ marginTop: "10px", fontSize: "14px" }}>
-                    <strong>Detalles por jugador:</strong>
+{evento.opciones &&
+  Object.entries(evento.opciones).some(
+    ([_, opts]) =>
+      opts.oro ||
+      opts.doble ||
+      opts.triple ||
+      opts.penal1 ||
+      opts.penal10
+  ) && (
+    <div style={{ marginTop: "10px", fontSize: "14px" }}>
+      <strong>Detalles por jugador:</strong>
+      {Object.entries(evento.opciones)
+        .filter(([_, opts]) =>
+          opts.oro ||
+          opts.doble ||
+          opts.triple ||
+          opts.penal1 ||
+          opts.penal10
+        )
+        .map(([nombre, opts]) => (
+          <p key={nombre}>
+            <strong>{nombre}:</strong>{" "}
+            {opts.oro && "Oro (+1) "}
+            {opts.doble && "Doble (+1) "}
+            {opts.triple && "Triple (+2) "}
+            {opts.penal1 && "Penal -1 "}
+            {opts.penal10 && "Penal -10 "}
+          </p>
+        ))}
+    </div>
+)}
 
-                    {Object.entries(evento.opciones)
-                      .filter(
-                        ([_, opts]) =>
-                          opts.oro ||
-                          opts.doble ||
-                          opts.triple ||
-                          opts.penal1 ||
-                          opts.penal10 ||
-                          opts.nosuma
-                      )
-                      .map(([nombre, opts]) => (
-                        <p key={nombre}>
-                          <strong>{nombre}:</strong>{" "}
-                          {opts.oro && "Oro (+1) "}
-                          {opts.doble && "Doble (+1) "}
-                          {opts.triple && "Triple (+2) "}
-                          {opts.penal1 && "Penal -1 "}
-                          {opts.penal10 && "Penal -10 "}
-                          {opts.nosuma && "No Suma (0)"}
-                        </p>
-                      ))}
-                  </div>
-                )}
               </div>
             </div>
           ))

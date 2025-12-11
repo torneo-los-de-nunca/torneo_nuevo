@@ -210,3 +210,47 @@ body {
     padding: 3px;
   }
 }
+/* ================================================
+   NO CORTA NOMBRES — TABLA SIMÉTRICA Y PROLIJA
+   ================================================ */
+
+/* Columna jugador: se ajusta al contenido */
+.celda-jugador {
+  padding: 4px 10px;
+  font-size: 14px;
+  line-height: 18px;
+  text-align: left;
+  white-space: normal;        /* <<< permite 2 líneas si realmente hace falta */
+  word-break: keep-all;       /* <<< no corta palabras */
+}
+
+/* Columna puntos */
+.celda-total {
+  text-align: center;
+  font-weight: bold;
+  width: 40px;
+}
+
+/* Celdas de las semanas — TODAS IGUALES */
+.tabla-torneo td:nth-child(n+3),
+.tabla-torneo th:nth-child(n+3) {
+  width: 26px !important;
+  min-width: 26px !important;
+  max-width: 26px !important;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  line-height: 26px;
+}
+
+/* Fila pareja SIEMPRE */
+.tabla-torneo td,
+.tabla-torneo th {
+  height: 28px;
+  vertical-align: middle;
+}
+
+/* Que la tabla no se deforme */
+.tabla-wrapper {
+  overflow-x: auto;
+}
