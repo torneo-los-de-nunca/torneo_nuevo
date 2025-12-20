@@ -6,6 +6,8 @@ import "../styles/estadisticas.css";
 import GraficoCarrera from "../components/GraficoCarrera";
 import iconEstadisticas from "../assets/icons/ldn-estadisticas.png";
 import IndiceParticipacion from "../components/IndiceParticipacion";
+import IntervalosAparicion from "../components/IntervalosAparicion";
+import DensidadMensual from "../components/DensidadMensual";
 
 // ===============================
 // FECHAS INICIALES (antes del sistema)
@@ -173,6 +175,48 @@ const estuvo = eventos.some((ev) => {
 
   return data.sort((a, b) => a.porcentaje - b.porcentaje);
 }
+function calcularIntervalosAparicion(jugadores, eventos, fechasIniciales) {
+  const hoy = new Date();
+
+  return jugadores.map((j) => {
+    const nombre = j.nombre;
+
+    // usamos Set para evitar duplicar días
+    const diasSet = new Set();
+
+    const fi = fechasIniciales[nombre];
+    if (fi) {
+      const f = parseFecha(fi);
+      if (f && f <= hoy) {
+        diasSet.add(f.toISOString().slice(0, 10));
+      }
+    }
+
+    eventos.forEach((ev) => {
+      const opts = ev.opciones?.[nombre];
+      if (!opts || !opts.selected) return;
+      if (opts.nosuma || opts.penal1 || opts.penal10) return;
+
+      const dia = ev.fecha.toISOString().slice(0, 10);
+      diasSet.add(dia); // 👈 solo 1 por día
+    });
+
+    const diasOrdenados = [...diasSet]
+      .map(d => new Date(d))
+      .sort((a, b) => a - b);
+
+    const intervalos = [];
+    for (let i = 1; i < diasOrdenados.length; i++) {
+      intervalos.push(diffDias(diasOrdenados[i], diasOrdenados[i - 1]));
+    }
+
+    return {
+      nombre,
+      intervalos,
+    };
+  });
+}
+
 
 // ===============================
 // CARRERA DE PUNTOS DESDE EVENTOS
@@ -229,13 +273,18 @@ acumulados[nombre] += puntosDeOpciones(opts);
 // COMPONENTE
 // ===============================
 export default function Estadisticas() {
-  const [jugadores, setJugadores] = useState([]);
-  const [eventos, setEventos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+const [jugadores, setJugadores] = useState([]);
+const [eventos, setEventos] = useState([]);
+const [loading, setLoading] = useState(true);
+const navigate = useNavigate();
+
 const [mostrarCarrera, setMostrarCarrera] = useState(false);
 const [mostrarParticipacion, setMostrarParticipacion] = useState(false);
+const [mostrarIntervalos, setMostrarIntervalos] = useState(false);
+const [mostrarDensidad, setMostrarDensidad] = useState(false);
+
 const [semanasSnapshot, setSemanasSnapshot] = useState([]);
+
   // cargar jugadores
   useEffect(() => {
     fetch("/jugadores.json")
@@ -349,6 +398,13 @@ const carreraFirestore = calcularCarreraDesdeSemanas(
   jugadores,
   puntosIniciales
 );
+
+const dataIntervalos = calcularIntervalosAparicion(
+  jugadores,
+  eventos,
+  fechasIniciales
+);
+
 const puntosTotales = {};
 jugadores.forEach(j => {
   puntosTotales[j.nombre] = puntosIniciales[j.nombre] ?? 0;
@@ -454,6 +510,40 @@ puntosTotales[j.nombre] += puntosDeOpciones(opts);
           </tbody>
         </table>
 {/* ===============================
+   INTERVALOS DE APARICIÓN
+=============================== */}
+<div className="grafico-carrera">
+  <div
+    className="grafico-toggle"
+    onClick={() => setMostrarIntervalos(!mostrarIntervalos)}
+    style={{
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: "12px 16px",
+      background: "#0f0f1a",
+      borderRadius: "10px",
+      marginBottom: "10px",
+      border: "1px solid #333",
+    }}
+  >
+    <h3 style={{ margin: 0 }}>
+      📊 Intervalos de aparición
+    </h3>
+    <span style={{ fontSize: "20px" }}>
+      {mostrarIntervalos ? "▲" : "▼"}
+    </span>
+  </div>
+
+  {mostrarIntervalos && (
+    <IntervalosAparicion data={dataIntervalos} />
+  )}
+</div>
+
+
+
+{/* ===============================
     CARRERA DE PUNTOS (GRÁFICO)
 =============================== */}
 <div className="grafico-carrera">
@@ -482,7 +572,7 @@ puntosTotales[j.nombre] += puntosDeOpciones(opts);
   </div>
 
   {/* CONTENIDO DESPLEGABLE */}
-  {mostrarCarrera && (
+   {mostrarCarrera && (
     <GraficoCarrera
       data={carreraFirestore}
       jugadores={jugadores}
@@ -517,6 +607,44 @@ puntosTotales[j.nombre] += puntosDeOpciones(opts);
   {/* CONTENIDO DESPLEGABLE */}
   {mostrarParticipacion && <IndiceParticipacion data={dataParticipacion} />}
 </div>
+
+{/* ===============================
+    DENSIDAD MENSUAL DE APARICIONES
+=============================== */}
+<div className="grafico-carrera">
+  <div
+    className="grafico-toggle"
+    onClick={() => setMostrarDensidad(!mostrarDensidad)}
+    style={{
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: "12px 16px",
+      background: "#0f0f1a",
+      borderRadius: "10px",
+      marginBottom: "10px",
+      border: "1px solid #333",
+    }}
+  >
+    <h3 style={{ margin: 0 }}>
+      📊 Densidad mensual de apariciones
+    </h3>
+    <span style={{ fontSize: "20px" }}>
+      {mostrarDensidad ? "▲" : "▼"}
+    </span>
+  </div>
+
+  {mostrarDensidad && (
+    <DensidadMensual
+      eventos={eventos}
+      jugadores={jugadores}
+    />
+  )}
+</div>
+
+
+
 
 </div>
 </div>

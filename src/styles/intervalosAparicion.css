@@ -1,0 +1,93 @@
+/* CONTENEDOR GENERAL */
+.intervalos-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* FILA DE JUGADOR */
+.intervalo-jugador {
+  background: rgba(20, 20, 30, 0.75);
+  border-radius: 10px;
+  padding: 6px 10px;
+  box-shadow: inset 0 0 8px rgba(120, 80, 200, 0.25);
+}
+
+/* NOMBRE DEL JUGADOR */
+.intervalos-nombre {
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 3px;
+  letter-spacing: 0.3px;
+  color: #cfcfe8;
+  opacity: 0.85;
+}
+
+
+/* CONTENEDOR DE CHIPS */
+.intervalos-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* CHIP BASE */
+.intervalo-chip {
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.25);
+  min-width: 26px;
+  height: 20px;
+  padding: 0 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+}
+
+/* COLORES POR DURACIÓN */
+.intervalo-corto {
+  background: linear-gradient(90deg, #00e5ff, #4af0ff);
+}
+
+.intervalo-medio {
+  background: linear-gradient(90deg, #ffeb3b, #ffc107);
+}
+
+.intervalo-largo {
+  background: linear-gradient(90deg, #ff9800, #ff5722);
+}
+
+.intervalo-muy-largo {
+  background: linear-gradient(90deg, #ff0033, #b00020);
+}
+
+
+/* ===============================
+   LISTA DE INTERVALOS (SCROLL)
+=============================== */
+
+.intervalos-lista {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  max-width: 100%;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #7b3fe4 transparent;
+}
+
+/* Scroll fino - Chrome / Edge */
+.intervalos-lista::-webkit-scrollbar {
+  height: 4px;
+}
+
+.intervalos-lista::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.intervalos-lista::-webkit-scrollbar-thumb {
+  background: #7b3fe4;
+  border-radius: 4px;
+}

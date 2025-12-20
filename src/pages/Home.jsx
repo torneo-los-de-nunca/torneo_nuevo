@@ -68,33 +68,94 @@ function recalcularJugadoresDesdeFirestore(jugadoresBase, semanasDetalle) {
     const iSemana = Number(semanaStr) - 1;
     if (iSemana < 0 || iSemana >= TOTAL_SEMANAS) return;
 
-    eventos.forEach((evento) => {
-      if (!evento.opciones) return;
+// ===============================
+// SUMA CORRECTA POR DÍA (LDN)
+// ===============================
 
-      Object.entries(evento.opciones).forEach(([nombre, opts]) => {
-        if (!opts.selected) return;
+// Agrupar eventos por fecha
+const eventosPorDia = {};
 
-        const idx = indice[nombre];
-        if (idx === undefined) return;
+eventos.forEach((evento) => {
+  if (!evento.fecha || !evento.opciones) return;
 
-        const puntos = calcularPuntosDeJugador(opts);
+  if (!eventosPorDia[evento.fecha]) {
+    eventosPorDia[evento.fecha] = [];
+  }
 
-        const sem = resultado[idx].semanas[iSemana];
-        const viejo = sem.valor || 0;
+  eventosPorDia[evento.fecha].push(evento);
+});
 
-        resultado[idx].semanas[iSemana] = {
-          valor: viejo + puntos,
-          oro: sem.oro || opts.oro,
-          doble: sem.doble || opts.doble,
-          triple: sem.triple || opts.triple,
-          penal1: sem.penal1 || opts.penal1,
-          penal10: sem.penal10 || opts.penal10,
-          nosuma: sem.nosuma || opts.nosuma,
-        };
+// Procesar día por día
+Object.values(eventosPorDia).forEach((eventosDelDia) => {
+  const baseSumada = {}; // jugador → true
 
-        resultado[idx].total += puntos;
-      });
+  eventosDelDia.forEach((evento) => {
+    Object.entries(evento.opciones).forEach(([nombre, opts]) => {
+      if (!opts.selected) return;
+
+      const idx = indice[nombre];
+      if (idx === undefined) return;
+
+      let puntos = 0;
+
+      // 👉 BASE: solo una vez por día
+      if (
+        !baseSumada[nombre] &&
+        !opts.nosuma &&
+        !opts.penal1 &&
+        !opts.penal10
+      ) {
+        puntos += 1;
+        baseSumada[nombre] = true;
+      }
+
+      // 👉 BONOS (siempre suman)
+      if (opts.oro) puntos += 1;
+      if (opts.doble) puntos += 1;
+      if (opts.triple) puntos += 2;
+
+      // 👉 PENALES
+      if (opts.penal1) puntos -= 1;
+      if (opts.penal10) puntos -= 10;
+
+const sem = resultado[idx].semanas[iSemana];
+const viejo = typeof sem.valor === "number" ? sem.valor : null;
+
+// Si puntos da 0 (ej: NO SUMA), igual queremos:
+// - guardar nosuma=true
+// - y si la celda no tenía nada, mostrar 0 (gris) como antes
+if (puntos === 0) {
+  resultado[idx].semanas[iSemana] = {
+    ...sem,
+    valor: viejo === null ? 0 : viejo, // si ya había algo (1,2,3, etc) NO lo pisamos
+    oro: sem.oro || opts.oro,
+    doble: sem.doble || opts.doble,
+    triple: sem.triple || opts.triple,
+    penal1: sem.penal1 || opts.penal1,
+    penal10: sem.penal10 || opts.penal10,
+    nosuma: sem.nosuma || opts.nosuma,
+  };
+  return;
+}
+
+// Si hay puntos != 0, sumamos normal
+resultado[idx].semanas[iSemana] = {
+  ...sem,
+  valor: (viejo === null ? 0 : viejo) + puntos,
+  oro: sem.oro || opts.oro,
+  doble: sem.doble || opts.doble,
+  triple: sem.triple || opts.triple,
+  penal1: sem.penal1 || opts.penal1,
+  penal10: sem.penal10 || opts.penal10,
+  nosuma: sem.nosuma || opts.nosuma,
+};
+
+resultado[idx].total += puntos;
+
     });
+  });
+});
+
   });
 
   resultado.sort((a, b) => b.total - a.total);
