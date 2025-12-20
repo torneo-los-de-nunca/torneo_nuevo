@@ -1,0 +1,62 @@
+.participacion-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.participacion-row {
+  background: #0f0f1a;
+  border-radius: 8px;
+  padding: 4px 8px;   /* ⬅️ antes era más grande */
+  border: 1px solid #222;
+}
+
+
+.participacion-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px; /* ⬅️ menos aire */
+}
+
+
+.participacion-nombre {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 13px;   /* ⬅️ antes 16 aprox */
+}
+
+.participacion-info {
+  font-size: 11px;   /* ⬅️ más chico */
+  color: #aaa;
+}
+
+
+.participacion-bar-bg {
+  height: 6px;        /* ⬅️ antes 8/10 */
+  background: #1a1a2a;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.participacion-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+
+/* COLORES (los que YA usás) */
+.participacion-bar.fuego {
+  background: linear-gradient(90deg, #ff6a00, #ff0000);
+}
+
+.participacion-bar.warning {
+  background: linear-gradient(90deg, #ffd000, #ffb000);
+}
+
+.participacion-bar.frio {
+  background: linear-gradient(90deg, #4af0ff, #7cf9ff);
+}
