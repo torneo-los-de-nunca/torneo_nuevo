@@ -1,0 +1,278 @@
+/* ===== CONTENEDOR GENERAL ===== */
+.reglamento-container {
+  max-width: 900px;
+  margin: auto;
+  padding: 24px;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #2a2342, #0e0e12 70%);
+  color: #eaeaea;
+font-family: "Oxanium", "Inter", system-ui, sans-serif;
+}
+
+/* ===== HEADER LIMPIO ===== */
+.reglamento-header {
+  position: relative;
+  text-align: center;
+  margin-bottom: 42px;
+  padding-top: 24px;
+}
+
+/* glow suave atrás */
+.reglamento-glow {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  height: 70px;
+  background: radial-gradient(
+    circle,
+    rgba(145, 71, 255, 0.45),
+    rgba(145, 71, 255, 0.15),
+    transparent
+  );
+  filter: blur(26px);
+  animation: glowPulse 4s ease-in-out infinite;
+  z-index: 0;
+}
+
+/* titulo principal */
+.reglamento-main-title {
+  position: relative;
+  z-index: 1;
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #ffffff;
+text-shadow:
+  0 0 4px rgba(145, 71, 255, 0.9),
+  0 0 12px rgba(145, 71, 255, 0.7),
+  0 0 24px rgba(145, 71, 255, 0.5);
+
+  animation: titleBreath 4s ease-in-out infinite;/* animation: titleBreath 4s ease-in-out infinite; */
+}
+
+/* linea divisoria */
+.reglamento-divider {
+  width: 120px;
+  height: 2px;
+  margin: 14px auto 10px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #b86bff,
+    transparent
+  );
+  opacity: 0.8;
+}
+
+/* subtitulo */
+.reglamento-subtitle {
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #c7a9ff;
+}
+
+/* ===== CARDS ===== */
+.reglamento-card {
+  background: rgba(30, 30, 45, 0.75);
+  border: 1px solid rgba(145, 71, 255, 0.3);
+  border-radius: 16px;
+  padding: 0;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+}
+.reglamento-card {
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.reglamento-card:has(.reglamento-text.open) {
+  border-color: rgba(145, 71, 255, 0.7);
+  box-shadow:
+    0 0 0 1px rgba(145, 71, 255, 0.3),
+    0 12px 40px rgba(145, 71, 255, 0.25);
+}
+
+/* ===== TITULO DESPLEGABLE ===== */
+.reglamento-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(135deg, #1a1630, #241b45);
+  color: #e6d9ff;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+/* ===== TITULO ABIERTO ===== */
+.reglamento-title {
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
+}
+
+.reglamento-card:has(.reglamento-text.open) .reglamento-title {
+  background: linear-gradient(
+    135deg,
+    #2a1d55,
+    #3a2b80
+  );
+  color: #ffffff;
+  box-shadow:
+    inset 0 -1px 0 rgba(145, 71, 255, 0.6);
+}
+
+.reglamento-title:hover {
+  background: linear-gradient(135deg, #241b45, #2e2260);
+  color: #ffffff;
+}
+
+/* ===== FLECHA ===== */
+.flecha {
+  font-size: 0.9rem;
+  transition: transform 0.3s ease;
+  color: #b86bff;
+}
+
+.flecha.abierta {
+  transform: rotate(180deg);
+  color: #ffffff;
+  text-shadow:
+    0 0 6px rgba(145, 71, 255, 0.9),
+    0 0 14px rgba(145, 71, 255, 0.7);
+}
+
+
+
+/* ===== TEXTO (SLIDE REAL) ===== */
+.reglamento-text {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  padding: 0 20px;
+  white-space: pre-line;
+  line-height: 1.75;
+  font-size: 0.95rem;
+
+  transform: translateY(-4px);
+
+  transition:
+    max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.35s ease,
+    padding 0.3s ease,
+    transform 0.35s ease;
+}
+
+
+.reglamento-text.open {
+  max-height: 260px;        /* ALTURA FIJA */
+  opacity: 1;
+  padding: 20px;
+  transform: translateY(0);
+  overflow-y: auto;        /* SCROLL INTERNO */
+}
+.reglamento-text.open::-webkit-scrollbar {
+  width: 6px;
+}
+
+.reglamento-text.open::-webkit-scrollbar-thumb {
+  background: rgba(145, 71, 255, 0.6);
+  border-radius: 6px;
+}
+
+.reglamento-text.open::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+
+/* ===== ADMIN ===== */
+.reglamento-input,
+.reglamento-textarea {
+  width: 100%;
+  background: #0f0f1a;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 10px;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.reglamento-textarea {
+  min-height: 140px;
+}
+
+.reglamento-btn {
+  background: linear-gradient(135deg, #9147ff, #5b2fbf);
+  border: none;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.reglamento-btn.delete {
+  background: #2a2a3a;
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes titleBreath {
+  0% {
+    text-shadow:
+      0 0 2px #ffffff,
+      0 0 8px rgba(255, 255, 255, 0.8),
+      0 0 18px rgba(145, 71, 255, 0.8);
+  }
+  50% {
+    text-shadow:
+      0 0 4px #ffffff,
+      0 0 12px rgba(255, 255, 255, 1),
+      0 0 26px rgba(145, 71, 255, 1);
+  }
+  100% {
+    text-shadow:
+      0 0 2px #ffffff,
+      0 0 8px rgba(255, 255, 255, 0.8),
+      0 0 18px rgba(145, 71, 255, 0.8);
+  }
+}
+
+@keyframes glowPulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 0.9; }
+  100% { opacity: 0.5; }
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 600px) {
+  .reglamento-container {
+    padding: 16px;
+  }
+
+  .reglamento-main-title {
+    font-size: 1.6rem;
+    letter-spacing: 2px;
+  }
+
+  .reglamento-title {
+    font-size: 0.95rem;
+  }
+
+  .reglamento-text {
+    font-size: 0.9rem;
+  }
+
+  /* 👇 ESTO ES LO NUEVO */
+  .reglamento-text.open {
+    max-height: 200px;
+  }
+}
