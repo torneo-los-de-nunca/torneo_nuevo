@@ -1,0 +1,974 @@
+/* ===== HEADER REGLAMENTO ===== */
+
+.reglamento-header {
+  position: relative;
+  text-align: center;
+  margin-bottom: 40px;
+  padding-top: 20px;
+}
+
+/* brillo atrás */
+.reglamento-glow {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 260px;
+  height: 60px;
+  background: radial-gradient(
+    circle,
+    rgba(145, 71, 255, 0.6),
+    rgba(145, 71, 255, 0.15),
+    transparent
+  );
+  filter: blur(22px);
+  animation: glowPulse 3s ease-in-out infinite;
+  z-index: 0;
+}
+
+/* título principal */
+.reglamento-main-title {
+  position: relative;
+  z-index: 1;
+  font-size: 2.1rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #ffffff;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 10px rgba(145, 71, 255, 0.9),
+    0 0 25px rgba(145, 71, 255, 0.6);
+}
+
+/* subtítulo */
+.reglamento-subtitle {
+  margin-top: 6px;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  color: #b86bff;
+  text-transform: uppercase;
+}
+
+/* animación del glow */
+@keyframes glowPulse {
+  0% {
+    opacity: 0.6;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.1);
+  }
+  100% {
+    opacity: 0.6;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* mobile */
+@media (max-width: 600px) {
+  .reglamento-main-title {
+    font-size: 1.6rem;
+    letter-spacing: 1.5px;
+  }
+}
+/* ===== FILA TITULO + ICONO ===== */
+.reglamento-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== ICONO LDN ===== */
+.ldn-icon {
+  font-weight: 900;
+  font-size: 1.4rem;
+  letter-spacing: 2px;
+  padding: 6px 10px;
+  border-radius: 10px;
+
+  color: #ffffff;
+  background: rgba(145, 71, 255, 0.15);
+
+  box-shadow:
+    0 0 10px rgba(255, 255, 255, 0.6),
+    0 0 20px rgba(145, 71, 255, 0.7);
+
+  text-shadow:
+    0 0 6px rgba(255, 255, 255, 0.9),
+    0 0 14px rgba(145, 71, 255, 0.9);
+
+  animation: ldnPulse 2.8s ease-in-out infinite;
+}
+
+/* ===== TITULO NEÓN ===== */
+.reglamento-main-title {
+  font-size: 2.1rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #ffffff;
+
+  text-shadow:
+    0 0 2px #ffffff,
+    0 0 6px rgba(255, 255, 255, 0.9),
+    0 0 14px rgba(145, 71, 255, 0.9),
+    0 0 28px rgba(145, 71, 255, 0.7);
+
+  animation: titleGlow 3s ease-in-out infinite;
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes titleGlow {
+  0% {
+    text-shadow:
+      0 0 2px #ffffff,
+      0 0 6px rgba(255, 255, 255, 0.8),
+      0 0 14px rgba(145, 71, 255, 0.8);
+  }
+  50% {
+    text-shadow:
+      0 0 4px #ffffff,
+      0 0 10px rgba(255, 255, 255, 1),
+      0 0 22px rgba(145, 71, 255, 1);
+  }
+  100% {
+    text-shadow:
+      0 0 2px #ffffff,
+      0 0 6px rgba(255, 255, 255, 0.8),
+      0 0 14px rgba(145, 71, 255, 0.8);
+  }
+}
+
+@keyframes ldnPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 600px) {
+  .reglamento-main-title {
+    font-size: 1.5rem;
+  }
+
+  .ldn-icon {
+    font-size: 1.1rem;
+    padding: 4px 8px;
+  }
+}
+
+/* ===========================
+   RESET BÁSICO
+=========================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0d0a14;
+  color: #ffffff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ===========================
+   GENERAL
+=========================== */
+.page {
+  padding-bottom: 60px;
+  min-height: 100vh;
+}
+
+.page.oro-day {
+  position: relative;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255, 215, 0, 0.22), transparent 55%),
+    radial-gradient(circle at 80% 0%, rgba(255, 193, 7, 0.18), transparent 60%),
+    linear-gradient(180deg, rgba(24, 18, 6, 0.35), rgba(12, 10, 20, 0.85));
+}
+
+.page.oro-day::before {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 215, 0, 0.25), transparent 55%),
+    radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.12), transparent 60%);
+  mix-blend-mode: screen;
+  opacity: 0.6;
+  animation: oroDayPulse 6s ease-in-out infinite;
+  z-index: 0;
+}
+
+.page.oro-day::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      120deg,
+      transparent 30%,
+      rgba(255, 215, 0, 0.18) 45%,
+      transparent 60%
+    );
+  mix-blend-mode: screen;
+  opacity: 0.6;
+  animation: oroDaySweep 8s linear infinite;
+  z-index: 0;
+}
+
+.oro-day-hero {
+  position: relative;
+  z-index: 1;
+  margin: 12px auto 18px;
+  text-align: center;
+  padding: 12px 16px;
+  max-width: 520px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 215, 0, 0.55);
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.22), rgba(255, 140, 0, 0.18));
+  color: #fff7d6;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-shadow:
+    0 0 10px rgba(255, 215, 0, 0.6),
+    0 0 24px rgba(255, 200, 0, 0.35);
+  box-shadow:
+    0 0 20px rgba(255, 215, 0, 0.35),
+    inset 0 0 12px rgba(255, 255, 255, 0.08);
+  animation: oroDayHero 1.8s ease-in-out infinite alternate;
+}
+
+.page.oro-day .tabla-torneo {
+  border-color: #f1c40f;
+  box-shadow: 0 0 26px rgba(241, 196, 15, 0.35);
+}
+
+@keyframes oroDayPulse {
+  0% { transform: scale(1); opacity: 0.45; }
+  50% { transform: scale(1.02); opacity: 0.75; }
+  100% { transform: scale(1); opacity: 0.55; }
+}
+
+@keyframes oroDaySweep {
+  0% { transform: translateX(-20%); }
+  100% { transform: translateX(20%); }
+}
+
+@keyframes oroDayHero {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-2px); }
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0;
+  cursor: pointer;
+}
+
+.logo-ldn {
+  height: 80px;
+}
+
+.titulo {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 10px;
+  color: #e9ddff;
+}
+
+/* ===========================
+   LEYENDA
+=========================== */
+.leyenda {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #e0d4ff;
+}
+
+.leyenda-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.leyenda-oro { background: #f1c40f; }
+.leyenda-doble { background: #3498db; }
+.leyenda-triple { background: #9b59b6; }
+.leyenda-penal { background: #e74c3c; }
+
+/* ===========================
+   TABLA PRINCIPAL (VERSIÓN ORIGINAL)
+=========================== */
+
+.tabla-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabla-torneo {
+  width: 95%;
+  margin: auto;
+  border-collapse: collapse;
+  background: #191326;
+  border: 2px solid #7b2cff;
+  box-shadow: 0 0 20px #5b1aff55;
+  border-radius: 12px;
+
+  /* mantiene tamaño parejo en celu */
+  min-width: 1800px;
+}
+
+/* CELDAS BASE */
+.tabla-torneo th,
+.tabla-torneo td {
+  width: 42px;
+  min-width: 42px;
+  max-width: 42px;
+  height: 28px;
+  padding: 0;
+  text-align: center;
+  font-size: 12px;
+  border: 1px solid #2d2344;
+  white-space: nowrap;
+}
+
+/* ===========================
+   CABECERA MEJORADA (SIN ROMPER NADA)
+=========================== */
+
+/* === COLUMNA JUGADOR === */
+.celda-jugador {
+  width: 140px !important;
+  min-width: 140px !important;
+  max-width: 140px !important;
+  background: linear-gradient(90deg, #3a2560, #6e3eb7);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 900;
+  padding-left: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-right: 2px solid #7b2cff;
+  text-shadow: 0 0 3px #000;
+}
+
+
+/* === COLUMNA PUNTOS === */
+.celda-total {
+  width: 80px !important;
+  min-width: 80px !important;
+  max-width: 80px !important;
+  background: linear-gradient(180deg, #3a2560, #241737);
+  color: #ffeaff;
+  font-size: 16px;
+  font-weight: 900;
+  text-shadow: 0 0 3px #000;
+  border-right: 2px solid #7b2cff;
+}
+
+
+
+
+/* ===========================
+   JUGADORES / PUNTOS (VERSIÓN ORIGINAL)
+=========================== */
+
+.celda-jugador {
+  width: 120px !important;
+  min-width: 120px !important;
+  max-width: 120px !important;
+  text-align: left;
+  padding-left: 10px;
+  font-weight: 700;
+  color: #fff;
+  background: #2b1a46;
+}
+
+.celda-total {
+  font-weight: 800;
+  width: 50px !important;
+  background: #2b1a46;
+  color: #ffeaff;
+}
+
+/* ===========================
+   DETALLES DE FICHAS (EL ORIGINAL LINDO)
+=========================== */
+
+.detalle-titulo {
+  margin-top: 25px;
+  margin-bottom: 8px;
+  text-align: center;
+  font-size: 20px;
+  color: #e7d8ff;
+}
+
+.detalle-weeks-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 10px;
+}
+
+.week-btn {
+  min-width: 28px;
+  padding: 4px;
+  border-radius: 6px;
+  border: 1px solid #7b2cff;
+  background: #181224;
+  color: #e9ddff;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.week-btn:hover { background: #7b2cff; }
+
+.week-selected {
+  background: #f1c40f;
+  color: #000;
+  font-weight: 700;
+}
+
+.detalle-lista {
+  width: 95%;
+  max-width: 800px;
+  margin: 10px auto 40px auto;
+}
+
+.detalle-vacio {
+  text-align: center;
+  color: #c9bfff;
+  font-size: 14px;
+}
+
+.detalle-item {
+  background: #181222;
+  border-radius: 8px;
+  border: 1px solid #3b285b;
+  margin-bottom: 8px;
+  padding: 8px 10px;
+}
+
+.detalle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detalle-fecha {
+  font-weight: 700;
+  color: #f1c40f;
+}
+
+.detalle-sub {
+  font-size: 13px;
+  color: #d0c4ff;
+}
+
+.detalle-body {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #f0e8ff;
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media (max-width: 768px) {
+  .titulo { font-size: 22px; }
+
+  .celda-jugador {
+    max-width: 110px;
+    font-size: 12px;
+  }
+
+  .tabla-torneo th,
+  .tabla-torneo td {
+    font-size: 10px;
+    height: 24px;
+  }
+}
+/* ====== OVERRIDE TOTAL CABECERA (FORZADO) ====== */
+/* === CABECERA GENERAL === */
+.tabla-torneo th {
+  background: linear-gradient(180deg, #6d30c7, #37186a);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+  text-shadow: 0 0 4px #000;
+  border-bottom: 2px solid #8a48ff;
+  letter-spacing: 0.3px;
+}
+
+/* === MESES === */
+.tabla-torneo th[colspan] {
+  background: linear-gradient(180deg, #8f45ff, #431c88);
+  font-size: 15px;
+  font-weight: 900;
+  text-transform: uppercase;
+  border-left: 2px solid #0003;
+  border-right: 2px solid #0003;
+  color: #fff;
+}
+
+
+/* === SEMANAS 1–52 === */
+.tabla-torneo tr:nth-child(2) th {
+  background: #2d1e4f;
+  color: #d9caff;
+  font-size: 12px;
+  font-weight: 700;
+  border-bottom: 1px solid #7b2cff;
+}
+/* ===========================
+   FECHA DE ORO - BANNER
+=========================== */
+
+.oro-banner-wrap{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 12px 0 18px 0;
+}
+
+.oro-banner{
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  padding: 14px 14px 12px 14px;
+
+  border: 1px solid rgba(241, 196, 15, 0.55);
+  background: linear-gradient(180deg, rgba(40, 30, 10, 0.85), rgba(20, 16, 8, 0.92));
+  box-shadow:
+    0 0 18px rgba(241, 196, 15, 0.25),
+    0 0 45px rgba(241, 196, 15, 0.12);
+
+  animation: oroPulse 1.8s ease-in-out infinite;
+}
+
+/* shimmer */
+.oro-banner::before{
+  content:"";
+  position:absolute;
+  top:-60%;
+  left:-40%;
+  width: 60%;
+  height: 220%;
+  transform: rotate(20deg);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.16),
+    rgba(241, 196, 15, 0.22),
+    rgba(255, 255, 255, 0.12),
+    transparent
+  );
+  filter: blur(1px);
+  animation: oroShimmer 2.6s linear infinite;
+  pointer-events: none;
+}
+
+.oro-badge{
+  display:inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  font-size: 12px;
+
+  color: #1a1200;
+  background: linear-gradient(90deg, #f1c40f, #ffd56a);
+  box-shadow:
+    0 0 10px rgba(241, 196, 15, 0.45),
+    0 0 22px rgba(241, 196, 15, 0.18);
+
+  animation: oroFlicker 2.2s ease-in-out infinite;
+}
+
+.oro-main{
+  margin-top: 10px;
+  font-weight: 900;
+  font-size: 18px;
+  color: #fff6d6;
+  text-shadow:
+    0 0 10px rgba(241, 196, 15, 0.22),
+    0 0 18px rgba(241, 196, 15, 0.14);
+}
+
+.oro-date{
+  color: #ffd56a;
+  text-shadow:
+    0 0 10px rgba(255, 213, 106, 0.30),
+    0 0 22px rgba(241, 196, 15, 0.20);
+}
+
+.oro-sub{
+  margin-top: 6px;
+  font-size: 13px;
+  color: #e9ddff;
+  opacity: 0.95;
+}
+
+.oro-days{
+  font-weight: 900;
+  color: #f1c40f;
+  text-shadow: 0 0 10px rgba(241,196,15,0.28);
+}
+
+.oro-actions{
+  margin-top: 10px;
+  display:flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.oro-btn{
+  border: none;
+  cursor: pointer;
+  font-weight: 900;
+  padding: 8px 10px;
+  border-radius: 10px;
+  color: #140e00;
+  background: linear-gradient(90deg, #f1c40f, #ffd56a);
+  box-shadow: 0 0 10px rgba(241, 196, 15, 0.18);
+}
+
+.oro-btn:hover{
+  transform: translateY(-1px);
+}
+
+.oro-btn-ghost{
+  background: rgba(241,196,15,0.10);
+  color: #ffe8a6;
+  border: 1px solid rgba(241,196,15,0.35);
+}
+
+/* modal */
+.oro-modal-backdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index: 9999;
+  padding: 16px;
+}
+
+.oro-modal{
+  width: 100%;
+  max-width: 420px;
+  border-radius: 14px;
+  background: #1e1b2e;
+  border: 1px solid rgba(241,196,15,0.35);
+  padding: 14px;
+  box-shadow: 0 0 26px rgba(241,196,15,0.12);
+}
+
+.oro-modal-title{
+  color: #fff6d6;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+.oro-modal-desc{
+  color: #d0c4ff;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.oro-modal-label{
+  display:block;
+  color: #fff6d6;
+  font-size: 13px;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.oro-modal-input{
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(241,196,15,0.35);
+  background: rgba(0,0,0,0.25);
+  color: white;
+  outline: none;
+}
+
+.oro-modal-row{
+  display:flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.oro-modal-save{
+  flex: 1;
+  border: none;
+  cursor: pointer;
+  font-weight: 900;
+  padding: 10px;
+  border-radius: 10px;
+  color: #140e00;
+  background: linear-gradient(90deg, #f1c40f, #ffd56a);
+}
+
+.oro-modal-cancel{
+  flex: 1;
+  border: 1px solid rgba(255,255,255,0.18);
+  cursor: pointer;
+  font-weight: 900;
+  padding: 10px;
+  border-radius: 10px;
+  color: white;
+  background: rgba(255,255,255,0.08);
+}
+
+/* animaciones */
+@keyframes oroPulse{
+  0%   { transform: scale(1);   filter: brightness(1); }
+  50%  { transform: scale(1.015); filter: brightness(1.08); }
+  100% { transform: scale(1);   filter: brightness(1); }
+}
+
+@keyframes oroShimmer{
+  0%   { transform: translateX(-60%) rotate(20deg); opacity: 0.45; }
+  50%  { opacity: 0.9; }
+  100% { transform: translateX(260%) rotate(20deg); opacity: 0.45; }
+}
+
+@keyframes oroFlicker{
+  0%, 100% { opacity: 0.92; }
+  40% { opacity: 1; }
+  60% { opacity: 0.82; }
+}
+/* ===============================
+   FECHA DE ORO – ANIMACIONES
+=============================== */
+
+.oro-banner {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* NORMAL */
+.oro-normal {
+  opacity: 0.85;
+}
+
+/* ESTA SEMANA */
+.oro-semana {
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+  animation: pulse-soft 2s infinite;
+}
+
+/* MAÑANA */
+.oro-mañana {
+  color: #ffcc00;
+  text-shadow: 0 0 16px rgba(255, 204, 0, 0.9);
+  animation: pulse-medium 1.3s infinite;
+}
+
+/* HOY */
+.oro-hoy {
+  color: #fff200;
+  font-weight: 900;
+  text-shadow: 
+    0 0 10px #fff200,
+    0 0 25px #ffd700,
+    0 0 45px #ffae00;
+  animation: pulse-strong 0.9s infinite;
+}
+
+/* KEYFRAMES */
+@keyframes pulse-soft {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pulse-medium {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pulse-strong {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Cumple */
+.oro-cumple {
+  margin-top: 6px;
+  font-size: 0.9rem;
+  opacity: 0.95;
+}
+.oro-congeladas {
+  position: fixed;
+  top: 140px;
+  right: 20px;
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 50;
+}
+
+.oro-congelada-card {
+  background: rgba(30, 24, 8, 0.95);
+  border: 2px solid #ffd700;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+}
+
+.oro-congelada-title {
+  font-weight: 800;
+  color: #ffd700;
+  margin-bottom: 6px;
+}
+
+.oro-congelada-date {
+  font-size: 0.9rem;
+}
+/* ===============================
+   FECHAS DE ORO CONGELADAS
+=============================== */
+
+.oro-congeladas {
+  position: fixed;
+  top: 140px;
+  right: 20px;
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 50;
+}
+
+.oro-congelada-card {
+  background: linear-gradient(180deg, #2a2108, #1b1606);
+  border: 2px solid #ffd700;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+}
+
+.oro-congelada-title {
+  font-weight: 800;
+  color: #ffd700;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.oro-congelada-original {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  margin-bottom: 4px;
+}
+
+.oro-congelada-date {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+
+@keyframes oroFlicker{
+  0%, 100% { opacity: 0.92; }
+  40% { opacity: 1; }
+  60% { opacity: 0.82; }
+}
+/* ===============================
+   FECHAS DE ORO – MOBILE FIX (SUAVE)
+================================ */
+
+@media (max-width: 768px) {
+  .oro-congeladas {
+    position: static;
+    margin: 28px auto 32px auto; /* más aire arriba y abajo */
+    padding: 0 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .oro-congelada-card {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px 12px;           /* más compacto */
+    border-radius: 10px;
+    box-shadow: none;             /* chau glow fuerte */
+    border: 1px solid #f1c40f;    /* borde fino, elegante */
+    background: rgba(0, 0, 0, 0.55);
+  }
+
+  .oro-congelada-card h4 {
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+
+  .oro-congelada-card p {
+    font-size: 13px;
+    margin: 2px 0;
+    line-height: 1.3;
+  }
+}
+/* ===============================
+   ⏳ DEADLINE FECHA DE ORO
+=============================== */
+
+.oro-deadline {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(255, 80, 80, 0.4);
+  text-align: center;
+}
+
+.oro-deadline-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ff6b6b;
+  opacity: 0.9;
+}
+
+.oro-deadline-time {
+  margin-top: 2px;
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: #ff3b3b;
+  text-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+  font-family: monospace;
+}

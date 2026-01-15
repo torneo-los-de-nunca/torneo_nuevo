@@ -1,0 +1,123 @@
+/* ============================
+   NAVBAR DESKTOP
+============================ */
+
+.navbar-desktop {
+  width: 100%;
+  background: #1a1330;
+  padding: 10px 0;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  border-bottom: 2px solid #7b2cff;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.nav-item {
+  color: #e3d6ff;
+  font-weight: 700;
+  font-size: 16px;
+  text-decoration: none;
+}
+
+.nav-item.active {
+  color: #f1c40f;
+  text-shadow: 0 0 8px #f1c40f;
+}
+
+/* ============================
+   NAVBAR MOBILE (APP STYLE)
+============================ */
+
+.navbar-mobile {
+  display: none;
+}
+
+/* SOLO CELULAR */
+@media (max-width: 768px) {
+  .navbar-desktop {
+    display: none;
+  }
+
+  .navbar-mobile {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #1a1330;
+    padding: 10px 0;
+    justify-content: space-around;
+    border-top: 2px solid #7b2cff;
+    z-index: 999;
+  }
+
+  .nav-icon {
+    font-size: 24px;
+    color: #e3d6ff;
+    text-decoration: none;
+  }
+
+  .nav-icon.active {
+    color: #f1c40f;
+    text-shadow: 0 0 8px #f1c40f;
+  }
+}
+/* NAV DESKTOP */
+.navbar-desktop {
+  display: flex;
+  gap: 20px;
+  background: #241b3d;
+  padding: 15px;
+  border-bottom: 3px solid #ff00c8;
+}
+
+.navbar-desktop .nav-item {
+  color: white;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.navbar-desktop .nav-item.active {
+  color: #ff00c8;
+}
+
+/* NAV MOBILE */
+.navbar-mobile {
+  display: none;
+}
+
+/* Vista mobile */
+@media (max-width: 768px) {
+  .navbar-desktop {
+    display: none;
+  }
+
+  .navbar-mobile {
+    display: flex;
+    justify-content: space-around;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #241b3d;
+    padding: 10px 0;
+    border-top: 3px solid #ff00c8;
+  }
+
+  .navbar-mobile .nav-item {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .navbar-mobile .nav-item.active {
+    color: #ff00c8;
+  }
+
+  body {
+    padding-bottom: 60px; /* para que no tape el contenido */
+  }
+}

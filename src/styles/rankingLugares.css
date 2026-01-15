@@ -1,0 +1,84 @@
+/* ===============================
+   RANKING LUGARES
+================================ */
+.ranking-lugares {
+  margin-top: 8px;
+  background: rgba(15, 15, 26, 0.55);
+  border: 1px solid rgba(145, 70, 255, 0.22);
+  border-radius: 14px;
+  padding: 8px;
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.35);
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.ranking-row {
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 6px;
+}
+
+.ranking-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.ranking-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 900;
+}
+
+.ranking-rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 8px;
+  background: rgba(145, 70, 255, 0.25);
+  border: 1px solid rgba(145, 70, 255, 0.45);
+  font-size: 11px;
+}
+
+.ranking-name {
+  letter-spacing: 0.2px;
+  font-size: 12px;
+}
+
+.ranking-count {
+  font-weight: 900;
+  font-size: 12px;
+}
+
+.ranking-bar-bg {
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #0b0b14;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ranking-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #4af0ff, #9146ff);
+  box-shadow: 0 0 10px rgba(145, 70, 255, 0.45);
+  animation: growRankBar 1s ease forwards;
+}
+
+@keyframes growRankBar {
+  from { width: 0%; }
+}
+
+@media (max-width: 480px) {
+  .ranking-lugares {
+    max-height: 260px;
+  }
+}

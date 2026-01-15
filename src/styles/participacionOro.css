@@ -1,0 +1,172 @@
+/* ===============================
+   JUGADOR CARD (ULTRA GAMER)
+================================ */
+.oro-jugador {
+  margin-bottom: 14px;
+}
+
+/* ===============================
+   HEADER JUGADOR
+================================ */
+.oro-jugador-header {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+
+  padding: 14px 18px;
+  border-radius: 14px;
+
+  background: linear-gradient(
+    135deg,
+    #3b1d7a,
+    #1a0f3d
+  );
+
+  border: 1px solid rgba(200, 160, 255, 0.5);
+
+  box-shadow:
+    0 0 12px rgba(180, 130, 255, 0.6),
+    0 0 28px rgba(120, 80, 255, 0.45),
+    inset 0 0 12px rgba(255, 215, 100, 0.25);
+
+  color: #f7eaff;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.oro-jugador-header:hover {
+  transform: scale(1.02);
+  box-shadow:
+    0 0 18px rgba(200, 160, 255, 0.8),
+    0 0 42px rgba(120, 80, 255, 0.65),
+    inset 0 0 18px rgba(255, 215, 100, 0.4);
+}
+
+.oro-nombre {
+  font-size: 1rem;
+}
+
+.oro-resumen {
+  font-size: 0.85rem;
+  color: #ffd700;
+  text-shadow:
+    0 0 6px rgba(255, 215, 0, 0.9),
+    0 0 14px rgba(255, 215, 0, 0.6);
+}
+
+.oro-flecha {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* ===============================
+   CONTENIDO
+================================ */
+.oro-jugador-content {
+  margin-top: 8px;
+  padding: 12px 10px;
+
+  background: linear-gradient(
+    180deg,
+    #0b0b18,
+    #06060f
+  );
+
+  border-radius: 12px;
+  border: 1px solid rgba(255, 215, 100, 0.35);
+
+  box-shadow:
+    inset 0 0 18px rgba(255, 215, 100, 0.25),
+    0 0 20px rgba(255, 215, 100, 0.15);
+}
+
+/* ===============================
+   TEMPORADAS
+================================ */
+.oro-temporadas {
+  display: grid;
+  grid-template-columns: 1.3fr repeat(3, 1fr);
+
+  font-size: 0.75rem;
+  font-weight: 800;
+
+  color: #ffd76a;
+  text-shadow:
+    0 0 8px rgba(255, 215, 100, 0.9);
+
+  margin-bottom: 8px;
+}
+
+.oro-temporadas span {
+  text-align: center;
+}
+
+/* ===============================
+   FILAS
+================================ */
+.oro-fila {
+  display: grid;
+  grid-template-columns: 1.3fr repeat(3, 1fr);
+  align-items: center;
+
+  padding: 8px 0;
+  border-top: 1px solid rgba(255, 215, 100, 0.25);
+}
+
+.oro-cumple {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #eee;
+  padding-left: 6px;
+}
+
+/* ===============================
+   CELDAS (ICONOS + GLOW)
+================================ */
+.oro-celda {
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 900;
+
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+/* Hover exagerado */
+.oro-celda.admin:hover {
+  transform: scale(1.35) rotate(-5deg);
+  filter: brightness(1.4);
+  cursor: pointer;
+}
+
+/* Click feedback */
+.oro-celda.admin:active {
+  transform: scale(0.9);
+}
+
+/* ===============================
+   COLORES POR ESTADO
+================================ */
+.estado-✓ {
+  text-shadow:
+    0 0 10px rgba(255, 215, 0, 1),
+    0 0 26px rgba(255, 215, 0, 0.9),
+    0 0 48px rgba(255, 215, 0, 0.7);
+}
+
+.estado-✕ {
+  text-shadow:
+    0 0 8px rgba(255, 80, 110, 0.9),
+    0 0 18px rgba(255, 80, 110, 0.6);
+}
+
+.estado-○ {
+  opacity: 0.5;
+}
+
+.estado-— {
+  opacity: 0.35;
+}
