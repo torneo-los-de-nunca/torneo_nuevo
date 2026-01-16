@@ -65,14 +65,14 @@ function TooltipOrdenado({ active, payload, label }) {
 // ===============================
 // LEYENDA (grid prolija)
 // ===============================
-function LegendGrid({ jugadores }) {
+function LegendGrid({ jugadores, colorMap }) {
   return (
     <div className="legend-grid">
       {jugadores.map((j) => (
         <div key={j.nombre} className="legend-item">
           <span
             className="legend-dot"
-            style={{ backgroundColor: coloresPorJugador[j.nombre] || "#fff" }}
+            style={{ backgroundColor: colorMap[j.nombre] || "#fff" }}
           />
           <span className="legend-name">{j.nombre}</span>
         </div>
@@ -84,7 +84,8 @@ function LegendGrid({ jugadores }) {
 // ===============================
 // COMPONENTE PRINCIPAL
 // ===============================
-export default function GraficoCarrera({ data, jugadores }) {
+export default function GraficoCarrera({ data, jugadores, colorMap }) {
+  const map = colorMap || coloresPorJugador;
   const [mostrarLeyenda, setMostrarLeyenda] = useState(false);
 
   if (!data || data.length === 0) return null;
@@ -107,6 +108,7 @@ export default function GraficoCarrera({ data, jugadores }) {
               cursor={{ stroke: "#555", strokeDasharray: "3 3" }}
               wrapperStyle={{
                 outline: "none",
+                zIndex: 20,
                 pointerEvents: "none", // 👈 no molesta al tocar/arrastrar
               }}
               offset={18} // 👈 lo separa del cursor
@@ -118,7 +120,7 @@ export default function GraficoCarrera({ data, jugadores }) {
                 key={j.nombre}
                 type="monotone"
                 dataKey={j.nombre}
-                stroke={coloresPorJugador[j.nombre] || "#ffffff"}
+                stroke={map[j.nombre] || "#ffffff"}
                 strokeWidth={3}
                 dot={false}
                 isAnimationActive
@@ -140,7 +142,7 @@ export default function GraficoCarrera({ data, jugadores }) {
       </button>
 
       {/* LEYENDA */}
-      {mostrarLeyenda && <LegendGrid jugadores={jugadores} />}
+      {mostrarLeyenda && <LegendGrid jugadores={jugadores} colorMap={map} />}
     </div>
   );
 }

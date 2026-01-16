@@ -1,0 +1,297 @@
+/* ===============================
+   HISTORICO
+================================ */
+.historico-page {
+  max-width: 1200px;
+  margin: 20px auto 60px;
+  padding: 0 14px;
+  color: #fff;
+}
+
+.historico-hero {
+  text-align: center;
+  padding: 18px 12px 24px;
+  border-radius: 16px;
+  background: radial-gradient(circle at 20% 10%, #2a2342, #0e0e14 70%);
+  border: 1px solid rgba(145, 70, 255, 0.3);
+  box-shadow: 0 0 20px rgba(145, 70, 255, 0.25);
+}
+
+.hero-title {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+}
+
+.hero-sub {
+  margin-top: 6px;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.section-title {
+  margin: 22px 0 12px;
+  font-size: 16px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Champions */
+.champions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.champion-card {
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(20, 20, 30, 0.7);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  box-shadow: 0 0 18px rgba(255, 193, 7, 0.18);
+}
+
+.champion-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.champion-year {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+  opacity: 0.8;
+}
+
+.champion-cup {
+  font-size: 20px;
+}
+
+.champion-name {
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: 900;
+  color: #ffe7a3;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+}
+
+.podium {
+  margin-top: 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.podium-item {
+  display: grid;
+  grid-template-columns: 26px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.podium-rank {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  border-radius: 8px;
+  background: rgba(255, 215, 0, 0.18);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+}
+
+.podium-score {
+  font-weight: 900;
+  opacity: 0.9;
+}
+
+/* Total section */
+.historico-total-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .historico-total-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.total-table,
+.total-chart {
+  background: rgba(15, 15, 24, 0.65);
+  border: 1px solid rgba(145, 70, 255, 0.2);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.chart-title {
+  font-size: 13px;
+  font-weight: 900;
+  margin-bottom: 10px;
+  letter-spacing: 0.3px;
+}
+
+.chart-empty {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* Seasons */
+.season-card {
+  margin-top: 12px;
+  border-radius: 14px;
+  background: rgba(15, 15, 24, 0.65);
+  border: 1px solid rgba(145, 70, 255, 0.2);
+  overflow: visible;
+}
+
+.season-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  cursor: pointer;
+  background: linear-gradient(
+    135deg,
+    rgba(145, 70, 255, 0.35),
+    rgba(255, 0, 200, 0.25)
+  );
+}
+
+.season-title {
+  font-weight: 900;
+  letter-spacing: 0.4px;
+}
+
+.season-arrow {
+  font-size: 18px;
+}
+
+.season-body {
+  padding: 12px;
+}
+
+.season-chart {
+  margin-top: 16px;
+}
+
+.season-chart .grafico-carrera-container,
+.season-chart .grafico-wrapper,
+.season-chart .recharts-wrapper {
+  overflow: visible;
+}
+
+.tooltip-twitch {
+  background: rgba(15, 15, 26, 0.92);
+  border: 1px solid rgba(145, 70, 255, 0.35);
+  border-radius: 10px;
+  padding: 10px 10px;
+  color: #fff;
+  font-size: 13px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  min-width: 170px;
+}
+
+.tooltip-title {
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: #d9c7ff;
+}
+
+.tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 0;
+}
+
+.tooltip-name {
+  opacity: 0.95;
+}
+
+.tooltip-value {
+  font-weight: 800;
+}
+
+/* Table */
+.historico-table-wrap {
+  overflow-x: auto;
+}
+
+.historico-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1200px;
+  background: #161320;
+  border: 1px solid rgba(145, 70, 255, 0.25);
+  border-radius: 12px;
+}
+
+.historico-table th,
+.historico-table td {
+  padding: 6px 6px;
+  font-size: 12px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  white-space: nowrap;
+}
+
+.historico-table th {
+  background: rgba(255, 255, 255, 0.05);
+  font-weight: 900;
+}
+
+.cell-name {
+  text-align: left;
+  font-weight: 900;
+}
+
+.cell-total {
+  font-weight: 900;
+  color: #ffe7a3;
+}
+
+/* Mini table */
+.miniTable {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(10, 10, 14, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 12px;
+}
+
+.miniTable thead th {
+  background: rgba(255, 255, 255, 0.04);
+  font-weight: 900;
+  padding: 8px 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.miniTable td {
+  padding: 7px 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: center;
+}
+
+.miniTable tr:hover {
+  background: rgba(145, 70, 255, 0.12);
+}
+
+.miniName {
+  text-align: left;
+  font-weight: 900;
+}
+
+.miniNum {
+  font-weight: 900;
+}
